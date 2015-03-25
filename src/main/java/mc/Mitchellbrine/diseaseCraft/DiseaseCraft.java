@@ -2,6 +2,7 @@ package mc.Mitchellbrine.diseaseCraft;
 
 import mc.Mitchellbrine.diseaseCraft.api.Disease;
 import mc.Mitchellbrine.diseaseCraft.disease.Diseases;
+import mc.Mitchellbrine.diseaseCraft.entity.EntityRegistration;
 import mc.Mitchellbrine.diseaseCraft.event.ContractingEvents;
 import mc.Mitchellbrine.diseaseCraft.json.DiseaseManager;
 import mc.Mitchellbrine.diseaseCraft.proxy.CommonProxy;
@@ -28,6 +29,9 @@ public class DiseaseCraft {
 	public static CommonProxy proxy;
 
 	public static Logger logger = LogManager.getLogger(References.MODID);
+
+	@Mod.Instance
+	public static DiseaseCraft instance;
 
 	/**
 	 * The order in disease loading is such:
@@ -89,6 +93,8 @@ public class DiseaseCraft {
 		DiseaseManager.findAllDiseases();
 
 		registerAllEvents();
+		EntityRegistration.init();
+		proxy.registerStuff();
 
 	}
 

@@ -53,6 +53,15 @@ public class DiseaseJSON implements JsonDeserializer<Disease> {
 			}
 		}
 
+		JsonElement deathRate = obj.get("deathRate");
+		int rate = -1;
+
+		if (deathRate != null) {
+			rate = deathRate.getAsInt();
+		}
+
+		disease.setDeathRate(rate);
+
 		return disease;
 	}
 }

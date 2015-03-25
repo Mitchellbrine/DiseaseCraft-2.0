@@ -22,6 +22,7 @@ public class Disease {
 	public List<Integer> effects;
 
 	public int level;
+	private int deathRate = -1;
 
 	private double minimumRequiredVersion;
 
@@ -110,5 +111,13 @@ public class Disease {
 			builder.append(effect + "\n");
 		}
 		return "Disease (mc.Mitchellbrine.diseaseCraft.api.Disease):\n\nDisease Name: " + this.identifier + "\nDisease Domain: " + this.domain + "\nMinimum required version: " + this.minimumRequiredVersion + "\n" + (!effects.isEmpty() ? "Effects:\n" + builder.toString() : "");
+	}
+
+	public void setDeathRate(int rate) {
+		this.deathRate = rate;
+	}
+
+	public int getDeathRate() {
+		return this.deathRate;
 	}
 }

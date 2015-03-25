@@ -1,10 +1,16 @@
 package mc.Mitchellbrine.diseaseCraft.disease;
 
+import mc.Mitchellbrine.diseaseCraft.DiseaseCraft;
 import mc.Mitchellbrine.diseaseCraft.api.Disease;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Mitchellbrine on 2015.
@@ -13,14 +19,16 @@ public class Diseases {
 
 	public static List<Disease> diseases;
 	public static List<Integer> acceptableModes;
+	public static Map<Integer,Method> modesAndMethods;
 
 	static {
 		diseases = new ArrayList<Disease>();
 		acceptableModes = new ArrayList<Integer>();
-		acceptableModes.add(-1 /* Jitter */);
-		acceptableModes.add(-2 /* Drop Item */);
-		acceptableModes.add(-3 /* Hydrophobia */);
-		acceptableModes.add(-4 /* *RESERVED* */);
+		modesAndMethods = new HashMap<Integer, Method>();
+		addMode(-1, "mc.Mitchellbrine.diseaseCraft.disease.effects.GenericEffects", "jitter");
+		addMode(-2, "mc.Mitchellbrine.diseaseCraft.disease.effects.GenericEffects", "dropItem");
+		addMode(-3, "mc.Mitchellbrine.diseaseCraft.disease.effects.GenericEffects", "hydrophobia");
+		addMode(-4, "mc.Mitchellbrine.diseaseCraft.disease.effects.GenericEffects", "death");
 		acceptableModes.add(-5 /* *RESERVED* */);
 		acceptableModes.add(-6 /* *RESERVED* */);
 	}
@@ -32,7 +40,7 @@ public class Diseases {
 			ArrayList<Integer> correctEffects = new ArrayList<Integer>();
 
 			for (int effect : effects) {
-				if (effect < 0 || Potion.potionTypes[effect] != null)
+				if (acceptableModes.contains(effect) || Potion.potionTypes[effect] != null)
 				correctEffects.add(effect);
 			}
 
@@ -40,6 +48,22 @@ public class Diseases {
 
 			diseases.add(disease);
 		}
+	}
+
+	public static void addMode(int modeNumber, String className, String methodName) {
+		try {
+			addMode(modeNumber, Class.forName(className).getMethod(methodName,EntityLivingBase.class,Disease.class));
+		} catch (Exception ex) {
+			DiseaseCraft.logger.error("Caught an error while adding mode with the number " + modeNumber,ex);
+		}
+	}
+
+	public static void addMode(int modeNumber, Method method) {
+		if (acceptableModes.contains(modeNumber)) {
+			DiseaseCraft.logger.error("The id " + modeNumber + " is already taken for modes. Please try another and report this to the mod author.");
+		}
+		acceptableModes.add(modeNumber);
+		modesAndMethods.put(modeNumber,method);
 	}
 
 }
