@@ -4,12 +4,11 @@ import mc.Mitchellbrine.diseaseCraft.DiseaseCraft;
 import mc.Mitchellbrine.diseaseCraft.api.Disease;
 import mc.Mitchellbrine.diseaseCraft.disease.Diseases;
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
 
 import java.util.Random;
 
@@ -35,7 +34,7 @@ public class GenericEffects {
 		rand.setSeed(player.worldObj.getTotalWorldTime());
 		for (int effect : disease.effects) {
 			if (effect > 0) {
-				player.addPotionEffect(new PotionEffect(effect, 100, 0, true, false));
+				player.addPotionEffect(new PotionEffect(effect, 120, 0, true));
 			} else {
 				if (Diseases.acceptableModes.contains(effect)) {
 					try {
@@ -76,9 +75,11 @@ public class GenericEffects {
 	}
 
 	public static void hydrophobia(EntityLivingBase player, Disease disease) {
-		BlockPos bodyUp = new BlockPos(player.posX,player.posY,player.posZ);
-		BlockPos bodyDown = new BlockPos(player.posX,player.posY - 1,player.posZ);
-		if (player.worldObj.getBlockState(bodyUp).getBlock().getMaterial() == Material.water || player.worldObj.getBlockState(bodyDown).getBlock().getMaterial() == Material.water) {
+		int posX = MathHelper.floor_double(player.posX);
+		int posY = MathHelper.floor_double(player.posY);
+		int posZ = MathHelper.floor_double(player.posZ);
+
+		if (player.worldObj.getBlock(posX, posY, posZ).getMaterial() == Material.water || player.worldObj.getBlock(posX,posY-1,posZ).getMaterial() == Material.water) {
 			if (player.worldObj.getTotalWorldTime() % 20 == 0) {
 				player.attackEntityFrom(DamageSource.drown,1.0F);
 			}

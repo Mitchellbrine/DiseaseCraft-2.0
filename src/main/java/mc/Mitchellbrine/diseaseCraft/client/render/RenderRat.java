@@ -3,7 +3,6 @@ package mc.Mitchellbrine.diseaseCraft.client.render;
 import mc.Mitchellbrine.diseaseCraft.entity.EntityRat;
 import net.minecraft.client.model.ModelSilverfish;
 import net.minecraft.client.renderer.entity.RenderLiving;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
@@ -20,9 +19,9 @@ public class RenderRat extends RenderLiving {
 
 	public static String room1People = "Lomeli12 azreth allout58 mage_kkaylium YSPilot sci4me";
 
-	public RenderRat(RenderManager p_i46144_1_)
+	public RenderRat()
 	{
-		super(p_i46144_1_, new ModelSilverfish(), 0.3F);
+		super(new ModelSilverfish(), 0.3F);
 	}
 
 	protected ResourceLocation getEntityTexture(EntityRat rat)

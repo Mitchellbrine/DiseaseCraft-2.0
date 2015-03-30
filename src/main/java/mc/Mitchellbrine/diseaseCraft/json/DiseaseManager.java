@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import mc.Mitchellbrine.diseaseCraft.DiseaseCraft;
 import mc.Mitchellbrine.diseaseCraft.api.Disease;
 import mc.Mitchellbrine.diseaseCraft.disease.Diseases;
-import net.minecraftforge.fml.relauncher.FMLInjectionData;
+import cpw.mods.fml.relauncher.FMLInjectionData;
 
 import java.io.File;
 import java.io.FileReader;

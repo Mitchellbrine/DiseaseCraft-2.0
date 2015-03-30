@@ -11,7 +11,7 @@
     ],
     "contracting":[
       {
-        "type":"biome",
+        "type":"temp",
         "parameters":[
           0.2,
           999999,
@@ -33,7 +33,7 @@
         "type":"mobAttack",
         "parameters":[
           "wolf",
-          999999
+          9
         ]
       }
     ]
@@ -48,7 +48,7 @@
     ],
     "contracting":[
       {
-        "type":"biome",
+        "type":"temp",
         "parameters":[
           0.95,
           999999,
@@ -79,7 +79,7 @@
     ],
     "contracting":[
       {
-        "type":"biome",
+        "type":"temp",
         "parameters":[
           0.95,
           999999,

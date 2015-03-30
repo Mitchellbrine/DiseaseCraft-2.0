@@ -3,7 +3,7 @@ package mc.Mitchellbrine.diseaseCraft.entity;
 import mc.Mitchellbrine.diseaseCraft.DiseaseCraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
-import net.minecraftforge.fml.common.registry.EntityRegistry;
+import cpw.mods.fml.common.registry.EntityRegistry;
 
 /**
  * Created by Mitchellbrine on 2015.
@@ -13,22 +13,22 @@ public class EntityRegistration {
 	private static int START_ID = 500;
 
 	public static void init() {
-		registerEntity(new EntityRat(null),"rat",7237230,3158064);
+		registerEntity(EntityRat.class,"rat",7237230,3158064);
 	}
 
 	@SuppressWarnings("unchecked")
-	private static void registerEntity(Entity entity, String name) {
+	private static void registerEntity(Class<? extends Entity> entity, String name) {
 		int id = getUniqueId();
-		EntityRegistry.registerModEntity(entity.getClass(),name,id, DiseaseCraft.instance,80,3,true);
-		EntityList.idToClassMapping.put(id,entity.getClass());
+		EntityRegistry.registerModEntity(entity, name, id, DiseaseCraft.instance, 80, 3, true);
+		EntityList.IDtoClassMapping.put(id,entity);
 		EntityList.entityEggs.put(id,new EntityList.EntityEggInfo(id,0xFFFFFF,0x111111));
 	}
 
 	@SuppressWarnings("unchecked")
-	private static void registerEntity(Entity entity, String name, int color1, int color2) {
+	private static void registerEntity(Class<? extends Entity> entity, String name, int color1, int color2) {
 		int id = getUniqueId();
-		EntityRegistry.registerModEntity(entity.getClass(),name,id, DiseaseCraft.instance,80,3,true);
-		EntityList.idToClassMapping.put(id,entity.getClass());
+		EntityRegistry.registerModEntity(entity, name, id, DiseaseCraft.instance, 80, 3, true);
+		EntityList.IDtoClassMapping.put(id,entity);
 		EntityList.entityEggs.put(id,new EntityList.EntityEggInfo(id,color1,color2));
 	}
 

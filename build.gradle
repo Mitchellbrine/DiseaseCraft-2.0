@@ -22,13 +22,14 @@ group= "mc.Mitchellbrine.diseaseCraft" // http://maven.apache.org/guides/mini/gu
 archivesBaseName = "DiseaseCraft"
 
 minecraft {
-    version = "1.8-11.14.1.1334"
+    //version = "1.8-11.14.1.1334"
+	version = "10.13.2.1291"
 	if (file('../run').exists()) {
 		runDir = "../run"
 	} else {
 		runDir = "eclipse"
 	}
-	mappings = "snapshot_20141130"
+	//mappings = "snapshot_20141130"
 }
 
 repositories{

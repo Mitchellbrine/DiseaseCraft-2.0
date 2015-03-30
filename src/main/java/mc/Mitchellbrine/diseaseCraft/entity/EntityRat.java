@@ -1,10 +1,10 @@
 package mc.Mitchellbrine.diseaseCraft.entity;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAttackOnCollide;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
-import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,8 +21,7 @@ public class EntityRat extends EntityMob {
 		this.setSize(0.4F, 0.3F);
 		this.tasks.addTask(1, new EntityAISwimming(this));
 		this.tasks.addTask(4, new EntityAIAttackOnCollide(this, EntityPlayer.class, 1.0D, false));
-		this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true, new Class[0]));
-		this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
+		this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true));
 	}
 
 	protected void applyEntityAttributes()
@@ -93,5 +92,12 @@ public class EntityRat extends EntityMob {
 		return EnumCreatureAttribute.ARTHROPOD;
 	}
 
+	@Override
+	public boolean attackEntityAsMob(Entity p_70652_1_) {
+		return false;
+	}
 
+	@Override
+	protected void attackEntity(Entity p_70785_1_, float p_70785_2_) {
+	}
 }
