@@ -33,7 +33,7 @@
         "type":"mobAttack",
         "parameters":[
           "wolf",
-          9
+          700000
         ]
       }
     ]
@@ -131,7 +131,7 @@
         "parameters":[
           "EntityHorse",
 		  2,
-          9
+          750000
         ]
       }
     ]

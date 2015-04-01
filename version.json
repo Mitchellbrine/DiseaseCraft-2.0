@@ -1,7 +1,12 @@
 [
   {
+    "version":2.001,
+    "mcVersion":7.10,
+    "changelog":"Fixed the rabies spawn level"
+  },
+  {
     "version":2.0,
-    "mcVersion":7.0,
+    "mcVersion":7.10,
     "changelog":"Initial release of the mod"
   }
 ]
