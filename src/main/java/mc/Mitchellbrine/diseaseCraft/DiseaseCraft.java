@@ -5,6 +5,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import mc.Mitchellbrine.diseaseCraft.api.Disease;
 import mc.Mitchellbrine.diseaseCraft.config.ConfigRegistry;
+import mc.Mitchellbrine.diseaseCraft.dio.DiseaseDownloader;
 import mc.Mitchellbrine.diseaseCraft.disease.Diseases;
 import mc.Mitchellbrine.diseaseCraft.entity.EntityRegistration;
 import mc.Mitchellbrine.diseaseCraft.event.ContractingEvents;
@@ -36,6 +37,8 @@ public class DiseaseCraft {
 	public static Logger logger = LogManager.getLogger(References.MODID);
 
 	public static boolean shouldUpdate = false;
+
+	public static final double MC_VERSION = 7.10;
 
 	@Mod.Instance
 	public static DiseaseCraft instance;
@@ -69,6 +72,10 @@ public class DiseaseCraft {
 		ConfigRegistry.init(event.getModConfigurationDirectory());
 
 		proxy.registerStuff();
+
+		if (DiseaseCraft.shouldUpdate) {
+			DiseaseDownloader.init();
+		}
 
 		/*
 

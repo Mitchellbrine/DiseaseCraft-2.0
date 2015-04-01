@@ -59,7 +59,7 @@ public class DCDummyMod extends DummyModContainer {
 				diseaseConfig.delete();
 			}
 
-			InputStream stream = new URL("").openStream();
+			InputStream stream = new URL("https://raw.githubusercontent.com/Mitchellbrine/DiseaseCraft-2.0/master/version.txt").openStream();
 
 			String writeToVersion = "";
 

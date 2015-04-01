@@ -1,17 +1,24 @@
 package mc.Mitchellbrine.diseaseCraft.event;
 
 import com.google.gson.JsonPrimitive;
+import cpw.mods.fml.common.gameevent.PlayerEvent;
+import mc.Mitchellbrine.diseaseCraft.DiseaseCraft;
 import mc.Mitchellbrine.diseaseCraft.api.Disease;
+import mc.Mitchellbrine.diseaseCraft.dio.DCVersion;
+import mc.Mitchellbrine.diseaseCraft.dio.VersionJSON;
 import mc.Mitchellbrine.diseaseCraft.disease.DiseaseHelper;
 import mc.Mitchellbrine.diseaseCraft.disease.Diseases;
 import mc.Mitchellbrine.diseaseCraft.disease.effects.GenericEffects;
 import mc.Mitchellbrine.diseaseCraft.entity.EntityRat;
 import mc.Mitchellbrine.diseaseCraft.utils.StatHelper;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -135,6 +142,20 @@ public class ContractingEvents {
 				event.entityLiving.getEntityData().setInteger(disease.getUnlocalizedName().replaceAll(".name",""),newDiseaseTimer);
 			}
 		}
+	}
+
+	@SubscribeEvent
+	public void login(PlayerEvent.PlayerLoggedInEvent event) {
+		double biggestDouble = 2.0;
+		for (DCVersion version : VersionJSON.versions) {
+			if (version.mcVersion == DiseaseCraft.MC_VERSION) {
+				if (version.versionNumber > biggestDouble) {
+					biggestDouble = version.versionNumber;
+				}
+			}
+		}
+		event.player.addChatComponentMessage(new ChatComponentTranslation("disease.update.new",biggestDouble));
+		event.player.addChatComponentMessage(new ChatComponentText(VersionJSON.getVersion(biggestDouble).updateString));
 	}
 
 

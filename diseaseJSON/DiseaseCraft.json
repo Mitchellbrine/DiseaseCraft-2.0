@@ -112,7 +112,26 @@
         "parameters":[
           "stat.walkOneCm",
           1000000,
-          true
+          true,
+		  999999
+        ]
+      }
+    ]
+  },
+  {
+    "name":"shrekRabies",
+    "level":1,
+    "minVersion":2.0,
+    "effects":[
+      2
+    ],
+    "contracting":[
+      {
+        "type":"mob",
+        "parameters":[
+          "EntityHorse",
+		  2,
+          9
         ]
       }
     ]
