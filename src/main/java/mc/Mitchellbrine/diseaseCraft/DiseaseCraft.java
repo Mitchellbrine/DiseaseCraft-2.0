@@ -3,6 +3,7 @@ package mc.Mitchellbrine.diseaseCraft;
 import cpw.mods.fml.common.event.FMLConstructionEvent;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import jdk.nashorn.internal.runtime.regexp.joni.Config;
 import mc.Mitchellbrine.diseaseCraft.api.Disease;
 import mc.Mitchellbrine.diseaseCraft.config.ConfigRegistry;
 import mc.Mitchellbrine.diseaseCraft.dio.DiseaseDownloader;
@@ -19,6 +20,7 @@ import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.common.config.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -70,10 +72,12 @@ public class DiseaseCraft {
 		}
 
 		ConfigRegistry.init(event.getModConfigurationDirectory());
+		ConfigRegistry.doConfig(new Configuration(event.getSuggestedConfigurationFile()));
+
 
 		proxy.registerStuff();
 
-		if (DiseaseCraft.shouldUpdate) {
+		if (DiseaseCraft.shouldUpdate && ConfigRegistry.autoUpdate) {
 			DiseaseDownloader.init();
 		}
 

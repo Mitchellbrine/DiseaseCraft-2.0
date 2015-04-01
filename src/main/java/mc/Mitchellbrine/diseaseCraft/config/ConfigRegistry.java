@@ -2,6 +2,7 @@ package mc.Mitchellbrine.diseaseCraft.config;
 
 import mc.Mitchellbrine.diseaseCraft.api.DCModule;
 import mc.Mitchellbrine.diseaseCraft.utils.ClassHelper;
+import net.minecraftforge.common.config.Configuration;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -18,6 +19,7 @@ public class ConfigRegistry {
 	public static Collection<DCModule> enabledMods;
 
 	public static int STATE = 0;
+	public static boolean autoUpdate;
 
 	public static void init(File configDirectory) {
 		enabledMods = ClassHelper.modules.values();
@@ -50,6 +52,16 @@ public class ConfigRegistry {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+	}
+
+	public static void doConfig(Configuration config) {
+
+		config.load();
+
+		autoUpdate = config.get(Configuration.CATEGORY_GENERAL,"autoUpdate",true,"Auto-download disease patches").getBoolean(true);
+
+		config.save();
+
 	}
 
 	public static void triggerState() {

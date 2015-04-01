@@ -20,6 +20,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.MathHelper;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -146,16 +147,19 @@ public class ContractingEvents {
 
 	@SubscribeEvent
 	public void login(PlayerEvent.PlayerLoggedInEvent event) {
-		double biggestDouble = 2.0;
-		for (DCVersion version : VersionJSON.versions) {
-			if (version.mcVersion == DiseaseCraft.MC_VERSION) {
-				if (version.versionNumber > biggestDouble) {
-					biggestDouble = version.versionNumber;
+		if (VersionJSON.versions != null) {
+			double biggestDouble = 2.0;
+			for (DCVersion version : VersionJSON.versions) {
+				if (version.mcVersion == Double.parseDouble(MinecraftForge.MC_VERSION.substring(MinecraftForge.MC_VERSION.indexOf(".")))) {
+					System.out.println(Double.parseDouble(MinecraftForge.MC_VERSION.substring(MinecraftForge.MC_VERSION.indexOf("."))));
+					if (version.versionNumber > biggestDouble) {
+						biggestDouble = version.versionNumber;
+					}
 				}
 			}
+			event.player.addChatComponentMessage(new ChatComponentTranslation("disease.update.new", biggestDouble));
+			event.player.addChatComponentMessage(new ChatComponentText(VersionJSON.getVersion(biggestDouble).updateString));
 		}
-		event.player.addChatComponentMessage(new ChatComponentTranslation("disease.update.new",biggestDouble));
-		event.player.addChatComponentMessage(new ChatComponentText(VersionJSON.getVersion(biggestDouble).updateString));
 	}
 
 
