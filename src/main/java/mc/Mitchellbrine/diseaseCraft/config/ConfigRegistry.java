@@ -8,23 +8,19 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
 
 /**
  * Created by Mitchellbrine on 2015.
  */
 public class ConfigRegistry {
 
-	public static Set<DCModule> enabledMods;
+	public static Collection<DCModule> enabledMods;
 
 	public static int STATE = 0;
 
 	public static void init(File configDirectory) {
-		enabledMods = new HashSet<DCModule>();
-		for (DCModule module : ClassHelper.modules.values()) {
-			enabledMods.add(module);
-		}
+		enabledMods = ClassHelper.modules.values();
 		try {
 			File moduleConfig = new File(configDirectory,"DC-modules.cfg");
 			if (moduleConfig.exists()) {
@@ -41,6 +37,8 @@ public class ConfigRegistry {
 						}
 					}
 				}
+
+				reader.close();
 			} else {
 				moduleConfig.createNewFile();
 				PrintWriter writer = new PrintWriter(moduleConfig);
@@ -56,22 +54,17 @@ public class ConfigRegistry {
 
 	public static void triggerState() {
 		for (DCModule module : enabledMods) {
-			switch (STATE) {
-				case 0:
-					ClassHelper.interfaces.get(module).preInit();
-					break;
-				case 1:
-					ClassHelper.interfaces.get(module).init();
-					break;
-				case 2:
-					ClassHelper.interfaces.get(module).postInit();
-					break;
-				case 3:
-					ClassHelper.interfaces.get(module).serverStart();
-					break;
-			}
+			ClassHelper.invokeMethod(STATE,ClassHelper.moduleMap.get(module));
 		}
 		STATE++;
+	}
+
+	public static boolean isModuleLoaded(String name) {
+		for (DCModule module : enabledMods) {
+			if (module.id().equalsIgnoreCase(name))
+				return true;
+		}
+		return false;
 	}
 
 }

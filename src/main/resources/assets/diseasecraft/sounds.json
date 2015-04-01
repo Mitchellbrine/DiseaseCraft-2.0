@@ -1,0 +1,5 @@
+  {
+	"neverOgre": {"category": "ambient","sounds": [{"name":"neverOgre","stream": false}]},
+	"allOgre": {"category": "ambient","sounds": [{"name":"allOgre","stream": false}]},
+	"mySwamp": {"category": "ambient","sounds": [{"name":"mySwamp","stream": false}]}
+  }

@@ -20,7 +20,8 @@ public class EntityRegistration {
 	private static void registerEntity(Class<? extends Entity> entity, String name) {
 		int id = getUniqueId();
 		EntityRegistry.registerModEntity(entity, name, id, DiseaseCraft.instance, 80, 3, true);
-		EntityList.IDtoClassMapping.put(id,entity);
+		EntityList.IDtoClassMapping.put(id, entity);
+		EntityList.classToStringMapping.put(entity.getClass(),name);
 		EntityList.entityEggs.put(id,new EntityList.EntityEggInfo(id,0xFFFFFF,0x111111));
 	}
 
@@ -28,7 +29,8 @@ public class EntityRegistration {
 	private static void registerEntity(Class<? extends Entity> entity, String name, int color1, int color2) {
 		int id = getUniqueId();
 		EntityRegistry.registerModEntity(entity, name, id, DiseaseCraft.instance, 80, 3, true);
-		EntityList.IDtoClassMapping.put(id,entity);
+		EntityList.IDtoClassMapping.put(id, entity);
+		EntityList.classToStringMapping.put(entity.getClass(),name);
 		EntityList.entityEggs.put(id,new EntityList.EntityEggInfo(id,color1,color2));
 	}
 

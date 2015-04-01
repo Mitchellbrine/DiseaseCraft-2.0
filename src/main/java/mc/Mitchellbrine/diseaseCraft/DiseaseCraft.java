@@ -10,6 +10,7 @@ import mc.Mitchellbrine.diseaseCraft.entity.EntityRegistration;
 import mc.Mitchellbrine.diseaseCraft.event.ContractingEvents;
 import mc.Mitchellbrine.diseaseCraft.json.DiseaseManager;
 import mc.Mitchellbrine.diseaseCraft.proxy.CommonProxy;
+import mc.Mitchellbrine.diseaseCraft.utils.ClassHelper;
 import mc.Mitchellbrine.diseaseCraft.utils.References;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -34,8 +35,14 @@ public class DiseaseCraft {
 
 	public static Logger logger = LogManager.getLogger(References.MODID);
 
+	public static boolean shouldUpdate = false;
+
 	@Mod.Instance
 	public static DiseaseCraft instance;
+
+	public DiseaseCraft() {
+		new ClassHelper();
+	}
 
 	/**
 	 * The order in disease loading is such:
@@ -100,10 +107,11 @@ public class DiseaseCraft {
 
 		DiseaseManager.findAllDiseases();
 
+		ConfigRegistry.STATE = 0;
+		ConfigRegistry.triggerState();
+
 		registerAllEvents();
 		EntityRegistration.init();
-
-		ConfigRegistry.triggerState();
 
 	}
 

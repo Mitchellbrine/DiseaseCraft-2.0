@@ -22,4 +22,26 @@ public class DiseaseHelper {
 		return entity.getEntityData().hasKey(disease.getUnlocalizedName().replaceAll(".name","")) && entity.getEntityData().getInteger(disease.getUnlocalizedName().replaceAll(".name","")) > 0;
 	}
 
+	public static void removeDisease(EntityLivingBase entity, Disease disease) {
+		if (entity.getEntityData().hasKey(disease.getUnlocalizedName().replaceAll(".name",""))) {
+			entity.getEntityData().setInteger(disease.getUnlocalizedName().replaceAll(".name",""),0);
+		}
+	}
+
+	public static boolean diseaseExists(String id) {
+		for (Disease disease : Diseases.diseases) {
+			if (disease.getId().equalsIgnoreCase(id))
+				return true;
+		}
+		return false;
+	}
+
+	public static Disease getDiseaseInstance(String id) {
+		for (Disease disease : Diseases.diseases) {
+			if (disease.getId().equalsIgnoreCase(id))
+				return disease;
+		}
+		return null;
+	}
+
 }

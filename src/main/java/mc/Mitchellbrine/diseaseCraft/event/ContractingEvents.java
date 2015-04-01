@@ -5,9 +5,11 @@ import mc.Mitchellbrine.diseaseCraft.api.Disease;
 import mc.Mitchellbrine.diseaseCraft.disease.DiseaseHelper;
 import mc.Mitchellbrine.diseaseCraft.disease.Diseases;
 import mc.Mitchellbrine.diseaseCraft.disease.effects.GenericEffects;
+import mc.Mitchellbrine.diseaseCraft.entity.EntityRat;
 import mc.Mitchellbrine.diseaseCraft.utils.StatHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
@@ -16,6 +18,7 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Mitchellbrine on 2015.
@@ -41,8 +44,34 @@ public class ContractingEvents {
 			if (EntityList.classToStringMapping != null && disease.getWaysToContract() != null && disease.getParameters("mob") != null && disease.getWaysToContract().contains("mob")) {
 				int distance = ((JsonPrimitive)disease.getParameters("mob")[1]).getAsInt();
 				for (Entity entity : (List<Entity>)event.entityLiving.worldObj.loadedEntityList) {
+					if (entity instanceof EntityPlayer) {
+						continue;
+					}
+					if (disease.getParameters("mob")[0] == null) {
+						System.out.println("First parameter is null");
+					}
+					if (disease.getParameters("mob")[1] == null) {
+						System.out.println("Second parameter is null");
+					}
+					if (disease.getParameters("mob")[2] == null) {
+						System.out.println("Second parameter is null");
+					}
+					if (GenericEffects.rand == null) {
+						GenericEffects.rand = new Random();
+					}
+					if (EntityList.classToStringMapping == null) {
+						System.out.println("The map is null!");
+					}
+					if (EntityList.classToStringMapping.get(entity.getClass()) == null) {
+						System.out.println("EntityString is null");
+						continue;
+					}
 					if (EntityList.getEntityString(entity).equalsIgnoreCase(((JsonPrimitive)disease.getParameters("mob")[0]).getAsString()) && entity.getDistanceToEntity(event.entityLiving) <= distance && GenericEffects.rand.nextInt(1000000) >= ((JsonPrimitive)disease.getParameters("mob")[2]).getAsInt()) {
-						DiseaseHelper.addDisease(event.entityLiving,disease);
+						DiseaseHelper.addDisease(event.entityLiving, disease);
+					} else if (EntityList.getEntityString(entity) == null) {
+						System.out.println("EntityString is null");
+					} else if (disease.getParameters("mob") == null) {
+						System.out.println("Parameters are null");
 					}
 				}
 			}
