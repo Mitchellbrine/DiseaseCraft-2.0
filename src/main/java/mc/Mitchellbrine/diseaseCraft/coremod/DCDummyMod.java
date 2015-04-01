@@ -88,6 +88,12 @@ public class DCDummyMod extends DummyModContainer {
 
 			DiseaseCraft.shouldUpdate = newVersion > version;
 
+			File diseaseMain = new File((File)FMLInjectionData.data()[6],"DiseaseCraft/DiseaseCraft.json");
+
+			if (!diseaseMain.exists()) {
+				DiseaseCraft.shouldUpdate = true;
+			}
+
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
