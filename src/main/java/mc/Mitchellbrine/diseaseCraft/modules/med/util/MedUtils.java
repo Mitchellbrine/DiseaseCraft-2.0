@@ -1,6 +1,5 @@
 package mc.Mitchellbrine.diseaseCraft.modules.med.util;
 
-import com.sun.istack.internal.NotNull;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import mc.Mitchellbrine.diseaseCraft.api.DiseaseEvent;
 import mc.Mitchellbrine.diseaseCraft.modules.med.recipe.MedicationRecipes;

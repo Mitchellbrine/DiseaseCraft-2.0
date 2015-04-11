@@ -1,6 +1,5 @@
 package mc.Mitchellbrine.diseaseCraft.modules.med.recipe;
 
-import com.sun.istack.internal.NotNull;
 import cpw.mods.fml.common.registry.GameRegistry;
 import mc.Mitchellbrine.diseaseCraft.disease.Diseases;
 import mc.Mitchellbrine.diseaseCraft.modules.Medicine;
