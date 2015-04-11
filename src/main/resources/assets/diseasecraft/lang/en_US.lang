@@ -1,3 +1,23 @@
 death.attack.shrek=%s just got Shrekd
+death.attack.medication=%s overdosed on medication
 
 disease.update.new=New Disease Update Available: %s
+
+disease.influenza.name=Influenza
+disease.rabies.name=Rabies
+disease.malaria.name=Malaria
+disease.pneumonicPlague.name=Pneumonic Plague
+disease.yellowFever.name=Yellow Fever
+disease.bubonicPlague.name=Bubonic Plague
+disease.parkinsons.name=Parkinson's Disease
+
+disease.shrekRabies.name=Shrek Rabies
+
+item.medication.name=Medication
+
+itemGroup.DCMedication=[DC] Medication
+itemGroup.bioWarfare=[DC] Biological Warfare
+
+item.chemicalExtractor.name=Chemical Extractor
+
+entity.DiseaseCraft.rat.name=Black Rat

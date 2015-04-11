@@ -13,11 +13,14 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -36,6 +39,7 @@ public class ChemicalExtractor extends Item {
 		setHasSubtypes(true);
 		setTextureName("syringe");
 		GameRegistry.registerItem(this,"chemicalExtractor");
+		GameRegistry.addRecipe(new ItemStack(this,1,0),"GWG","G G"," G ",'G',Blocks.glass_pane,'W',Blocks.log);
 	}
 
 	@Override
@@ -43,11 +47,10 @@ public class ChemicalExtractor extends Item {
 		if (stack.getItemDamage() == 1) {
 			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("disease") && entity instanceof EntityLivingBase) {
 				String id = stack.getTagCompound().getString("disease");
-				for (Disease disease : Diseases.diseases) {
-					if (disease.getId().equalsIgnoreCase(id)) {
-						DiseaseHelper.addDisease((EntityLivingBase)entity,disease);
-					}
-				}
+				DiseaseHelper.addDisease((EntityLivingBase)entity,DiseaseHelper.getDiseaseInstance(id));
+				stack.setTagCompound(new NBTTagCompound());
+				stack.setItemDamage(0);
+				return true;
 			}
 		}
 		return false;
@@ -71,7 +74,7 @@ public class ChemicalExtractor extends Item {
 	public void addInformation(ItemStack stack, EntityPlayer player, List lore, boolean par4)
 	{
 		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("disease") && DiseaseHelper.diseaseExists(stack.getTagCompound().getString("disease"))) {
-			lore.add("Disease: " + DiseaseHelper.getDiseaseInstance(stack.getTagCompound().getString("disease")).getUnlocalizedName());
+			lore.add("Disease: " + StatCollector.translateToLocal(Diseases.getDiseaseName(stack.getTagCompound().getString("disease"))));
 		}
 	}
 
@@ -83,7 +86,12 @@ public class ChemicalExtractor extends Item {
 	@SuppressWarnings("unchecked")
 	public void getSubItems(Item item, CreativeTabs tab, List l) {
 		l.add(new ItemStack(this, 1, 0));
-		l.add(new ItemStack(this,1,1));
+		for (Disease disease : Diseases.diseases) {
+			ItemStack stack = new ItemStack(this,1,1);
+			stack.setTagCompound(new NBTTagCompound());
+			stack.getTagCompound().setString("disease",disease.getId());
+			l.add(stack);
+		}
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -129,6 +137,28 @@ public class ChemicalExtractor extends Item {
 			par3EntityPlayer.setItemInUse(par1ItemStack, this.getMaxItemUseDuration(par1ItemStack));
 		}
 		return par1ItemStack;
+	}
+
+	@Override
+	public boolean onItemUse(ItemStack itemStack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
+		if (itemStack.getItemDamage() == 0) {
+			if (world.getBlock(x,y,z) == Blocks.leaves2) {
+				if (world.getBiomeGenForCoords(x,z).temperature > 1.0F) {
+					if (itemRand.nextInt(100) < 10) {
+						itemStack.getTagCompound().setString("disease","malaria");
+					}
+				}
+			}
+
+			if (world.getBlock(x,y,z) == Blocks.grass) {
+				if (world.getBiomeGenForCoords(x,z).temperature > 1.0F) {
+					if (itemRand.nextInt(100) < 8) {
+						itemStack.getTagCompound().setString("disease","yellowFever");
+					}
+				}
+			}
+		}
+		return true;
 	}
 
 }

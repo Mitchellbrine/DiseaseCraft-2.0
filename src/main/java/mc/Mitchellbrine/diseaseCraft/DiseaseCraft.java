@@ -1,10 +1,7 @@
 package mc.Mitchellbrine.diseaseCraft;
 
-import cpw.mods.fml.common.event.FMLConstructionEvent;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import jdk.nashorn.internal.runtime.regexp.joni.Config;
-import mc.Mitchellbrine.diseaseCraft.api.Disease;
 import mc.Mitchellbrine.diseaseCraft.config.ConfigRegistry;
 import mc.Mitchellbrine.diseaseCraft.dio.DiseaseDownloader;
 import mc.Mitchellbrine.diseaseCraft.disease.Diseases;
@@ -59,17 +56,6 @@ public class DiseaseCraft {
 	 */
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		try {
-			Class clazz = Class.forName("mc.Mitchellbrine.diseaseCraft.DiseaseCraft");
-			clazz.getMethod("hello").setAccessible(true);
-			Method method = clazz.getMethod("hello");
-			if (method.getGenericReturnType() == Boolean.TYPE) {
-				boolean worked = (Boolean)method.invoke(this);
-				System.out.println(worked);
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
 
 		ConfigRegistry.init(event.getModConfigurationDirectory());
 		ConfigRegistry.doConfig(new Configuration(event.getSuggestedConfigurationFile()));
@@ -84,6 +70,18 @@ public class DiseaseCraft {
 		/*
 
 		THE FOLLOWING WAS TEST CODE!
+
+		try {
+			Class clazz = Class.forName("mc.Mitchellbrine.diseaseCraft.DiseaseCraft");
+			clazz.getMethod("hello").setAccessible(true);
+			Method method = clazz.getMethod("hello");
+			if (method.getGenericReturnType() == Boolean.TYPE) {
+				boolean worked = (Boolean)method.invoke(this);
+				System.out.println(worked);
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 
 		Disease test = new Disease("testDisease");
 

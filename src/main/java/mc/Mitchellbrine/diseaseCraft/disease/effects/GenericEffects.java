@@ -2,6 +2,7 @@ package mc.Mitchellbrine.diseaseCraft.disease.effects;
 
 import mc.Mitchellbrine.diseaseCraft.DiseaseCraft;
 import mc.Mitchellbrine.diseaseCraft.api.Disease;
+import mc.Mitchellbrine.diseaseCraft.api.DiseaseEvent;
 import mc.Mitchellbrine.diseaseCraft.disease.Diseases;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
@@ -9,6 +10,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.util.Random;
 
@@ -32,16 +34,19 @@ public class GenericEffects {
 
 	public static void applyEffects(EntityLivingBase player, Disease disease) {
 		rand.setSeed(player.worldObj.getTotalWorldTime());
-		for (int effect : disease.effects) {
-			if (effect > 0) {
-				player.addPotionEffect(new PotionEffect(effect, 120, 0, true));
-			} else {
-				if (Diseases.acceptableModes.contains(effect)) {
-					try {
-						Diseases.modesAndMethods.get(effect).setAccessible(true);
-						Diseases.modesAndMethods.get(effect).invoke(instance(), player, disease);
-					} catch (Exception ex) {
-						DiseaseCraft.logger.error("Exception was caught while processing effects of mode id " + effect, ex);
+		DiseaseEvent.DiseaseEffectEvent event = new DiseaseEvent.DiseaseEffectEvent(disease, player);
+		if (!MinecraftForge.EVENT_BUS.post(event)) {
+			for (int effect : disease.effects) {
+				if (effect > 0) {
+					player.addPotionEffect(new PotionEffect(effect, 120, 0, true));
+				} else {
+					if (Diseases.acceptableModes.contains(effect)) {
+						try {
+							Diseases.modesAndMethods.get(effect).setAccessible(true);
+							Diseases.modesAndMethods.get(effect).invoke(instance(), player, disease);
+						} catch (Exception ex) {
+							DiseaseCraft.logger.error("Exception was caught while processing effects of mode id " + effect, ex);
+						}
 					}
 				}
 			}

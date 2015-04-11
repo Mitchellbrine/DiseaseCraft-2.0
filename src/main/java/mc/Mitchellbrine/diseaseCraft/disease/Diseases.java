@@ -3,7 +3,6 @@ package mc.Mitchellbrine.diseaseCraft.disease;
 import mc.Mitchellbrine.diseaseCraft.DiseaseCraft;
 import mc.Mitchellbrine.diseaseCraft.api.Disease;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
 
 import java.lang.reflect.Method;
@@ -64,6 +63,14 @@ public class Diseases {
 		}
 		acceptableModes.add(modeNumber);
 		modesAndMethods.put(modeNumber,method);
+	}
+
+	public static String getDiseaseName(String id) {
+		for (Disease disease : diseases) {
+			if (disease.getId().equalsIgnoreCase(id))
+				return disease.getUnlocalizedName();
+		}
+		return null;
 	}
 
 }

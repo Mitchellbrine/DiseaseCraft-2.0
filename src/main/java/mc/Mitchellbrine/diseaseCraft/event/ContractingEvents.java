@@ -150,8 +150,8 @@ public class ContractingEvents {
 		if (VersionJSON.versions != null) {
 			double biggestDouble = 2.0;
 			for (DCVersion version : VersionJSON.versions) {
-				if (version.mcVersion == Double.parseDouble(MinecraftForge.MC_VERSION.substring(MinecraftForge.MC_VERSION.indexOf(".")))) {
-					System.out.println(Double.parseDouble(MinecraftForge.MC_VERSION.substring(MinecraftForge.MC_VERSION.indexOf("."))));
+				if (version.mcVersion == Double.parseDouble(MinecraftForge.MC_VERSION.substring(MinecraftForge.MC_VERSION.indexOf(".") + 1))) {
+					System.out.println(Double.parseDouble(MinecraftForge.MC_VERSION.substring(MinecraftForge.MC_VERSION.indexOf(".") + 1)));
 					if (version.versionNumber > biggestDouble) {
 						biggestDouble = version.versionNumber;
 					}

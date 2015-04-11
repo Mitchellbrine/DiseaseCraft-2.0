@@ -222,3 +222,5 @@ pip-log.txt
 .mr.developer.cfg
 SteamTech.ipr
 SteamTech.iws
+
+build.bat

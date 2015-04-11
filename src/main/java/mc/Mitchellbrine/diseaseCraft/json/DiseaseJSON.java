@@ -46,7 +46,7 @@ public class DiseaseJSON implements JsonDeserializer<Disease> {
 					final JsonArray array = object.getAsJsonArray("parameters");
 					for (int i = 0; i < array.size(); i++) {
 						parameters[i] = array.get(i);
-						System.out.println(parameters[i]);
+						//System.out.println(parameters[i]);
 					}
 					disease.addWayToContract(type,parameters);
 				}

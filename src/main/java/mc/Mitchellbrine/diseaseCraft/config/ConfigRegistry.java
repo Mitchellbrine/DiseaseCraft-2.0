@@ -1,5 +1,8 @@
 package mc.Mitchellbrine.diseaseCraft.config;
 
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.registry.LanguageRegistry;
+import cpw.mods.fml.relauncher.Side;
 import mc.Mitchellbrine.diseaseCraft.api.DCModule;
 import mc.Mitchellbrine.diseaseCraft.utils.ClassHelper;
 import net.minecraftforge.common.config.Configuration;
@@ -52,6 +55,25 @@ public class ConfigRegistry {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+			try {
+				/*List<IResourcePack> defaultResourcePacks = ReflectionHelper.getPrivateValue(Minecraft.class, Minecraft.getMinecraft(), "defaultResourcePacks", "field_110449_ao", "ap");
+				File file = new File(configDirectory, "diseaseTranslate.lang");
+				if (!file.exists()) {
+					file.createNewFile();
+				}
+				FileResourcePack langPack = new FileResourcePack(file);
+				defaultResourcePacks.add(langPack);
+				} */
+
+			File file = new File(configDirectory, "diseaseTranslate.lang");
+			LanguageRegistry.instance().loadLocalization(file.toURI().toURL(),"en_US",false);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+
 	}
 
 	public static void doConfig(Configuration config) {
