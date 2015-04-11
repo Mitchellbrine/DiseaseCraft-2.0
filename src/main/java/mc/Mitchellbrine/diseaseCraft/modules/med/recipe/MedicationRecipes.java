@@ -64,7 +64,7 @@ public class MedicationRecipes {
 		}
 	}
 
-	public static void addMedicationType(@NotNull ItemStack stack, String curesDisease, String medicineName, int suppresentsRequired) {
+	public static void addMedicationType(ItemStack stack, String curesDisease, String medicineName, int suppresentsRequired) {
 		if (suppresentsRequired > 4) {
 			suppresentsRequired = 4;
 		}

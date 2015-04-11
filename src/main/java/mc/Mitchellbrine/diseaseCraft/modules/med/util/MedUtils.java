@@ -20,7 +20,7 @@ public class MedUtils {
 		return entity.getEntityData().hasKey("block" + id) && entity.getEntityData().getInteger("block" + id) > 0;
 	}
 
-	public static void applyEffect(EntityLivingBase entity, @NotNull NBTTagCompound nbt) {
+	public static void applyEffect(EntityLivingBase entity, NBTTagCompound nbt) {
 		if (!nbt.hasKey("diseaseHeal")) {
 			return;
 		}
