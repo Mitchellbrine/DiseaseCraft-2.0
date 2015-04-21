@@ -3,7 +3,7 @@ package mc.Mitchellbrine.diseaseCraft.dio;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import cpw.mods.fml.relauncher.FMLInjectionData;
-import scala.actors.threadpool.Arrays;
+import java.util.Arrays;
 
 import java.io.File;
 import java.io.FileReader;

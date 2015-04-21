@@ -7,6 +7,7 @@ import mc.Mitchellbrine.diseaseCraft.disease.Diseases;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
@@ -39,6 +40,9 @@ public class GenericEffects {
 			for (int effect : disease.effects) {
 				if (effect > 0) {
 					player.addPotionEffect(new PotionEffect(effect, 120, 0, true));
+					if (Potion.potionTypes[effect] == Potion.digSlowdown) {
+						player.addPotionEffect(new PotionEffect(effect,120,3,true));
+					}
 				} else {
 					if (Diseases.acceptableModes.contains(effect)) {
 						try {

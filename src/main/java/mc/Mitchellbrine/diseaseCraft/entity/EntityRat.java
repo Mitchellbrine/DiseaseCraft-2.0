@@ -6,10 +6,14 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAttackOnCollide;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAISwimming;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
+
+import java.util.Calendar;
 
 /**
  * Created by Mitchellbrine on 2015.
@@ -99,5 +103,19 @@ public class EntityRat extends EntityMob {
 
 	@Override
 	protected void attackEntity(Entity p_70785_1_, float p_70785_2_) {
+	}
+
+	@Override
+	protected void dropFewItems(boolean p_70628_1_, int p_70628_2_) {
+		if (Calendar.getInstance().get(Calendar.MONTH) == Calendar.MAY && Calendar.getInstance().get(Calendar.DAY_OF_MONTH) == 1) {
+			int range = 6 - p_70628_2_ > 0 ? 6 - p_70628_2_ : 1;
+			if (this.rand.nextInt(range) == 0) {
+				int j = this.rand.nextInt(3 + p_70628_2_);
+
+				for (int k = 0; k < j; ++k) {
+					this.dropItem(Items.cake, 1);
+				}
+			}
+		}
 	}
 }

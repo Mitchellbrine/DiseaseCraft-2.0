@@ -33,7 +33,7 @@ public class ConfigRegistry {
 				String s;
 
 				while ((s = reader.readLine()) != null) {
-					if (!Boolean.parseBoolean(s.substring(s.indexOf(":")))) {
+					if (!Boolean.parseBoolean(s.substring(s.indexOf(":") + 1))) {
 						for (DCModule module : enabledMods) {
 							if (module.id().equalsIgnoreCase(s.substring(0,s.indexOf(":")))) {
 								enabledMods.remove(module);
@@ -68,6 +68,9 @@ public class ConfigRegistry {
 				} */
 
 			File file = new File(configDirectory, "diseaseTranslate.lang");
+				if (!file.exists()) {
+					file.createNewFile();
+				}
 			LanguageRegistry.instance().loadLocalization(file.toURI().toURL(),"en_US",false);
 			} catch (Exception ex) {
 				ex.printStackTrace();

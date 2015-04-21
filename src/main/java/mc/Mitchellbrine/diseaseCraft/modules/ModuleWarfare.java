@@ -17,21 +17,22 @@ import net.minecraftforge.common.MinecraftForge;
 @DCModule(id = "bioWarfare",modid = "DiseaseCraft",dcVersion = References.VERSION, canBeDisabled = true)
 public class ModuleWarfare extends Module {
 
-	public static CreativeTabs tab = new CreativeTabs(CreativeTabs.getNextID(),"bioWarfare") {
-		@Override
-		public Item getTabIconItem() {
-			return chemicalExtractor;
-		}
-
-		@Override
-		public ItemStack getIconItemStack() {
-			return new ItemStack(chemicalExtractor,1,1);
-		}
-	};
+	public static CreativeTabs tab;
 
 	public static Item chemicalExtractor;
 
 	public void preInit() {
+		tab = new CreativeTabs(CreativeTabs.getNextID(),"bioWarfare") {
+			@Override
+			public Item getTabIconItem() {
+				return chemicalExtractor;
+			}
+
+			@Override
+			public ItemStack getIconItemStack() {
+				return new ItemStack(chemicalExtractor,1,1);
+			}
+		};
 		chemicalExtractor = new ChemicalExtractor().setUnlocalizedName("chemicalExtractor");
 		MinecraftForge.EVENT_BUS.register(new ChemicalEvents());
 		FMLCommonHandler.instance().bus().register(new ChemicalEvents());

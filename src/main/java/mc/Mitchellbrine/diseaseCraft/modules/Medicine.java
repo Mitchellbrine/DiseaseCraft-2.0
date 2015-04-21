@@ -25,15 +25,16 @@ public class Medicine extends Module {
 
 	public static Item medication;
 
-	public static CreativeTabs tab = new CreativeTabs(CreativeTabs.getNextID(),"DCMedication") {
-		@Override
-		public Item getTabIconItem() {
-			return medication;
-		}
-	};
+	public static CreativeTabs tab;
 
 	@Override
 	public void preInit() {
+		tab = new CreativeTabs(CreativeTabs.getNextID(),"DCMedication") {
+			@Override
+			public Item getTabIconItem() {
+				return medication;
+			}
+		};
 		medication = new ItemMedication();
 		MinecraftForge.EVENT_BUS.register(new MedUtils());
 		FMLCommonHandler.instance().bus().register(new MedUtils());

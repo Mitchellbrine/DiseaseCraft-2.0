@@ -14,7 +14,7 @@
         "type":"temp",
         "parameters":[
           0.2,
-          999999,
+          750000,
           false
         ]
       }
@@ -26,7 +26,8 @@
     "minVersion":2.0,
     "effects":[
       -3,
-      2
+      2,
+      -4
     ],
     "contracting":[
       {
@@ -36,7 +37,8 @@
           700000
         ]
       }
-    ]
+    ],
+    "deathRate":50
   },
   {
     "name":"malaria",
@@ -44,18 +46,20 @@
     "minVersion":2.0,
     "effects":[
       4,
-      18
+      18,
+      -4
     ],
     "contracting":[
       {
         "type":"temp",
         "parameters":[
           0.95,
-          999999,
+          999990,
           true
         ]
       }
-    ]
+    ],
+    "deathRate":50
   },
   {
     "name":"pneumonicPlague",
@@ -64,8 +68,20 @@
     "effects":[
       2,
       4,
-      18
-    ]
+      18,
+      -4
+    ],
+    "contracting":[
+      {
+        "type":"eaten",
+        "parameters":[
+          319,
+          0,
+          950000
+        ]
+      }
+    ],
+    "deathRate":50
   },
   {
     "name":"yellowFever",
@@ -75,7 +91,8 @@
       2,
       4,
       9,
-      18
+      18,
+      -4
     ],
     "contracting":[
       {
@@ -86,7 +103,8 @@
           true
         ]
       }
-    ]
+    ],
+    "deathRate":50
   },
   {
     "name":"bubonicPlague",
@@ -94,8 +112,20 @@
     "minVersion":2.0,
     "effects":[
       2,
-      18
-    ]
+      18,
+      -4
+    ],
+    "contracting":[
+      {
+      "type":"mob",
+      "parameters":[
+        "DiseaseCraft.rat",
+        3,
+        999000
+      ]
+      }
+    ],
+    "deathRate":75
   },
   {
     "name":"parkinsons",
@@ -113,7 +143,7 @@
           "stat.walkOneCm",
           1000000,
           true,
-		  999999
+		  990000
         ]
       }
     ]
