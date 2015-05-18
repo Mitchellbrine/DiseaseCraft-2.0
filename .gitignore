@@ -19,6 +19,7 @@ local.properties
 eclipse/
 .idea/
 build/
+libs/
 *.iml
 *.ipr
 *.iws
