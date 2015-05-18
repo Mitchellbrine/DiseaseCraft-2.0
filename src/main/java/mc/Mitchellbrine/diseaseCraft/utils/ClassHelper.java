@@ -86,4 +86,12 @@ public class ClassHelper {
 		}
 	}
 
+	public static DCModule getModule(String id) {
+		for (String module : modules.keySet()) {
+			if (module.equals(id))
+				return modules.get(module);
+		}
+		return null;
+	}
+
 }

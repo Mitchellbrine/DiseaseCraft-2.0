@@ -15,6 +15,7 @@ public class Disease {
 
 	private String identifier;
 	private String domain;
+	private String lore;
 
 	private List<String> waysToContract;
 	private Map<String,Object[]> contractParameters;
@@ -25,6 +26,8 @@ public class Disease {
 	private int deathRate = -1;
 
 	private double minimumRequiredVersion;
+
+	private boolean isJoke, isVanilla;
 
 	public Disease(String id) {
 		this.domain = "DiseaseCraft";
@@ -40,6 +43,11 @@ public class Disease {
 		effects = new ArrayList<Integer>();
 
 		this.minimumRequiredVersion = Double.parseDouble(References.VERSION);
+
+		if (domain.equalsIgnoreCase("DiseaseCraft")) {
+			isVanilla = true;
+		}
+
 	}
 
 	public String getId() {
@@ -119,5 +127,25 @@ public class Disease {
 
 	public int getDeathRate() {
 		return this.deathRate;
+	}
+
+	public void triggerJoke() {
+		isJoke = !isJoke;
+	}
+
+	public boolean isJoke() {
+		return this.isJoke;
+	}
+
+	public boolean isVanilla() {
+		return this.isVanilla;
+	}
+
+	public String[] getLore() {
+		return lore != null ? lore.split("\n") : new String[]{};
+	}
+
+	public void setLore(String string) {
+		this.lore = string;
 	}
 }

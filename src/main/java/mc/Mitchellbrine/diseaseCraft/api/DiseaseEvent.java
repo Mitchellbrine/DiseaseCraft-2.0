@@ -7,7 +7,7 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 /**
  * Created by Mitchellbrine on 2015.
  */
-public class DiseaseEvent extends LivingEvent{
+public class DiseaseEvent extends LivingEvent {
 
 	public Disease disease;
 
@@ -22,6 +22,14 @@ public class DiseaseEvent extends LivingEvent{
 		public DiseaseEffectEvent(Disease disease, EntityLivingBase entity) {
 			super(disease, entity);
 		}
+	}
+
+	public static class DiseaseEndEvent extends DiseaseEvent {
+
+		public DiseaseEndEvent(Disease disease, EntityLivingBase entity) {
+			super(disease, entity);
+		}
+
 	}
 
 }

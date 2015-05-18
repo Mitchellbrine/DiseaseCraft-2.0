@@ -18,7 +18,8 @@
           false
         ]
       }
-    ]
+    ],
+    "lore":"Pesky, annoying but\nnot fatal.\n\nIt waits for and is\nsympathetic towards\nno man."
   },
   {
     "name":"rabies",
@@ -33,12 +34,13 @@
       {
         "type":"mobAttack",
         "parameters":[
-          "wolf",
+          "Wolf",
           700000
         ]
       }
     ],
-    "deathRate":50
+    "deathRate":50,
+    "lore":"Fear of water,\nAnimal instincts,\nFoam for drool\nCraze insue\n\nSoon to die\nAfraid that's why\nThey need to be\nPut down too..."
   },
   {
     "name":"malaria",
@@ -59,7 +61,8 @@
         ]
       }
     ],
-    "deathRate":50
+    "deathRate":50,
+    "lore":"Mosquitoes bite,\nIn sweltering light\nBathed in \nsun and plague"
   },
   {
     "name":"pneumonicPlague",
@@ -81,7 +84,8 @@
         ]
       }
     ],
-    "deathRate":50
+    "deathRate":50,
+    "lore":"Yersinia Pestis,\nViolent than the fleas\nFor animal bacteria\neverywhere it seems."
   },
   {
     "name":"yellowFever",
@@ -104,7 +108,8 @@
         ]
       }
     ],
-    "deathRate":50
+    "deathRate":50,
+    "lore":"The fever of yellow,\nMany lives claimed.\n\nTried to defeat us,\nbattered and maimed."
   },
   {
     "name":"bubonicPlague",
@@ -125,7 +130,8 @@
       ]
       }
     ],
-    "deathRate":75
+    "deathRate":75,
+    "lore":"Punishment...\nThey called it God \npunishing us!\n\nBut now we know\n this evil threat.\n\nBrought about by fleas \nand rat,\nCaught us in their \nfoul trap."
   },
   {
     "name":"parkinsons",
@@ -146,7 +152,8 @@
 		  990000
         ]
       }
-    ]
+    ],
+    "lore":"\"How do you trace\na scatter plot?\n\nGive the pencil\nto Michael J. Fox.\"\n-Bo Burnham"
   },
   {
     "name":"shrekRabies",
@@ -164,6 +171,9 @@
           750000
         ]
       }
-    ]
+    ],
+	"isJoke":true,
+    "lore":" I was only nine\n years old.\n\nI loved Shrek so much, \nI owned all the movies\n and merchandise..."
   }
 ]
+

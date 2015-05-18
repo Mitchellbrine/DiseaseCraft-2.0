@@ -62,6 +62,23 @@ public class DiseaseJSON implements JsonDeserializer<Disease> {
 
 		disease.setDeathRate(rate);
 
+		JsonElement isJokeElement = obj.get("isJoke");
+		boolean isJoke = false;
+
+		if (isJokeElement != null) {
+			isJoke = isJokeElement.getAsBoolean();
+		}
+
+		if (isJoke) {
+			disease.triggerJoke();
+		}
+
+		JsonElement lore = obj.get("lore");
+
+		if (lore != null) {
+			disease.setLore(lore.getAsString());
+		}
+
 		return disease;
 	}
 }

@@ -1,5 +1,10 @@
 [
   {
+    "version":2.1,
+    "mcVersion":7.10,
+    "changelog":"Update to new tags for DC 2.1"
+  }
+  {
 	"version":2.01,
 	"mcVersion":7.10,
 	"changelog":"Fixed Pneumonic and Bubonic plague"

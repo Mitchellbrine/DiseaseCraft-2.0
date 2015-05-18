@@ -1,5 +1,6 @@
 death.attack.shrek=%s just got Shrekd
 death.attack.medication=%s overdosed on medication
+death.attack.sickness=%s died of disease
 
 disease.update.new=New Disease Update Available: %s
 
@@ -19,5 +20,12 @@ itemGroup.DCMedication=[DC] Medication
 itemGroup.bioWarfare=[DC] Biological Warfare
 
 item.chemicalExtractor.name=Chemical Extractor
+item.medicalJournal.name=Medical Journal
+item.userMedicalJournal.name=Medical Journal
 
 entity.DiseaseCraft.rat.name=Black Rat
+
+symptom.hydrophobia=Hydrophobia
+symptom.jitter=Jitter
+symptom.dropItem=Slippery Fingers
+symptom.death=

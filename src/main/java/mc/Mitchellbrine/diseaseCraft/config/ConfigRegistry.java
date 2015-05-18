@@ -6,6 +6,8 @@ import cpw.mods.fml.relauncher.Side;
 import mc.Mitchellbrine.diseaseCraft.api.DCModule;
 import mc.Mitchellbrine.diseaseCraft.utils.ClassHelper;
 import net.minecraftforge.common.config.Configuration;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -23,6 +25,10 @@ public class ConfigRegistry {
 
 	public static int STATE = 0;
 	public static boolean autoUpdate;
+	public static String[] userDiseases;
+	public static int journalLevel;
+
+	public static Logger logger = LogManager.getLogger("DiseaseCraft-Config");
 
 	public static void init(File configDirectory) {
 		enabledMods = ClassHelper.modules.values();
@@ -84,6 +90,8 @@ public class ConfigRegistry {
 		config.load();
 
 		autoUpdate = config.get(Configuration.CATEGORY_GENERAL,"autoUpdate",true,"Auto-download disease patches").getBoolean(true);
+		userDiseases = config.getStringList("userDiseases",Configuration.CATEGORY_GENERAL,new String[]{},"The diseases that go in the user medical journal");
+		journalLevel = config.getInt("journalLevel",Configuration.CATEGORY_GENERAL,0,0,1,"Specify which diseases appear in journals\n\n0 = Regular Diseases\n1 = Joke Diseases\n\n");
 
 		config.save();
 

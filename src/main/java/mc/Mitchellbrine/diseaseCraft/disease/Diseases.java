@@ -19,11 +19,13 @@ public class Diseases {
 	public static List<Disease> diseases;
 	public static List<Integer> acceptableModes;
 	public static Map<Integer,Method> modesAndMethods;
+	public static Map<Method,String> modesAndNames;
 
 	static {
 		diseases = new ArrayList<Disease>();
 		acceptableModes = new ArrayList<Integer>();
 		modesAndMethods = new HashMap<Integer, Method>();
+		modesAndNames = new HashMap<Method, String>();
 		addMode(-1, "mc.Mitchellbrine.diseaseCraft.disease.effects.GenericEffects", "jitter");
 		addMode(-2, "mc.Mitchellbrine.diseaseCraft.disease.effects.GenericEffects", "dropItem");
 		addMode(-3, "mc.Mitchellbrine.diseaseCraft.disease.effects.GenericEffects", "hydrophobia");
@@ -62,7 +64,12 @@ public class Diseases {
 			DiseaseCraft.logger.error("The id " + modeNumber + " is already taken for modes. Please try another and report this to the mod author.");
 		}
 		acceptableModes.add(modeNumber);
-		modesAndMethods.put(modeNumber,method);
+		modesAndMethods.put(modeNumber, method);
+		if (method.getName().lastIndexOf(".") != -1) {
+			modesAndNames.put(method, method.getName().substring(method.getName().lastIndexOf(".")));
+		} else {
+			modesAndNames.put(method, method.getName());
+		}
 	}
 
 	public static String getDiseaseName(String id) {

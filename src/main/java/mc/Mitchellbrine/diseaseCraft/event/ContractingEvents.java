@@ -2,16 +2,16 @@ package mc.Mitchellbrine.diseaseCraft.event;
 
 import com.google.gson.JsonPrimitive;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
-import mc.Mitchellbrine.diseaseCraft.DiseaseCraft;
 import mc.Mitchellbrine.diseaseCraft.api.Disease;
+import mc.Mitchellbrine.diseaseCraft.api.DiseaseEvent;
 import mc.Mitchellbrine.diseaseCraft.dio.DCVersion;
 import mc.Mitchellbrine.diseaseCraft.dio.VersionJSON;
 import mc.Mitchellbrine.diseaseCraft.disease.DiseaseHelper;
 import mc.Mitchellbrine.diseaseCraft.disease.Diseases;
 import mc.Mitchellbrine.diseaseCraft.disease.effects.GenericEffects;
-import mc.Mitchellbrine.diseaseCraft.entity.EntityRat;
+import mc.Mitchellbrine.diseaseCraft.network.NBTPacket;
+import mc.Mitchellbrine.diseaseCraft.network.PacketHandler;
 import mc.Mitchellbrine.diseaseCraft.utils.StatHelper;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,7 +28,6 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
 
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created by Mitchellbrine on 2015.
@@ -122,9 +121,20 @@ public class ContractingEvents {
 	public void livingUpdate(LivingEvent.LivingUpdateEvent event) {
 		for (Disease disease : Diseases.diseases) {
 			if (DiseaseHelper.isDiseaseActive(event.entityLiving,disease)) {
+				if (event.entityLiving.getEntityData().hasKey(disease.getUnlocalizedName().replaceAll(".name","")) && event.entityLiving.getEntityData().getInteger(disease.getUnlocalizedName().replaceAll(".name","")) == 1 && !event.entityLiving.isDead) {
+					MinecraftForge.EVENT_BUS.post(new DiseaseEvent.DiseaseEndEvent(disease,event.entityLiving));
+				}
 				GenericEffects.applyEffects(event.entityLiving,disease);
 				int newDiseaseTimer = event.entityLiving.getEntityData().getInteger(disease.getUnlocalizedName().replaceAll(".name","")) - 1;
 				event.entityLiving.getEntityData().setInteger(disease.getUnlocalizedName().replaceAll(".name",""),newDiseaseTimer);
+			}
+		}
+		if (event.entityLiving.worldObj.getTotalWorldTime() % 60 == 0) {
+			if (!event.entityLiving.worldObj.isRemote) {
+				if (event.entityLiving instanceof EntityPlayer) {
+					EntityPlayerMP player = (EntityPlayerMP) event.entityLiving;
+					PacketHandler.INSTANCE.sendTo(new NBTPacket(player.PERSISTED_NBT_TAG, player.getEntityData().getCompoundTag(player.PERSISTED_NBT_TAG)), player);
+				}
 			}
 		}
 	}
@@ -166,5 +176,19 @@ public class ContractingEvents {
 		}
 	}
 
-
+	@SubscribeEvent
+	public void endDiseases(DiseaseEvent.DiseaseEndEvent event) {
+		if (event.entityLiving instanceof EntityPlayer) {
+			EntityPlayer player = (EntityPlayer)event.entityLiving;
+			if (!player.getEntityData().hasKey(player.PERSISTED_NBT_TAG, 10)) {
+				player.getEntityData().setTag(player.PERSISTED_NBT_TAG, new NBTTagCompound());
+			}
+			player.getEntityData().getCompoundTag(player.PERSISTED_NBT_TAG).setBoolean(event.disease.getUnlocalizedName().replaceAll(".name", ".complete"), true);
+			System.out.println("Goodbye Caroline!");
+			System.out.println(event.entityLiving + " " + player.getEntityData().getCompoundTag(player.PERSISTED_NBT_TAG).getBoolean(event.disease.getUnlocalizedName().replaceAll(".name", ".complete")));
+			if (!player.worldObj.isRemote) {
+				PacketHandler.INSTANCE.sendTo(new NBTPacket(player.PERSISTED_NBT_TAG,player.getEntityData().getCompoundTag(player.PERSISTED_NBT_TAG)),(EntityPlayerMP)player.worldObj.getClosestPlayer(player.posX,player.posY,player.posZ,10));
+			}
+		}
+	}
 }

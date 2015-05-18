@@ -1,13 +1,18 @@
 package mc.Mitchellbrine.diseaseCraft;
 
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import mc.Mitchellbrine.diseaseCraft.client.gui.GuiHandler;
 import mc.Mitchellbrine.diseaseCraft.config.ConfigRegistry;
 import mc.Mitchellbrine.diseaseCraft.dio.DiseaseDownloader;
 import mc.Mitchellbrine.diseaseCraft.disease.Diseases;
 import mc.Mitchellbrine.diseaseCraft.entity.EntityRegistration;
 import mc.Mitchellbrine.diseaseCraft.event.ContractingEvents;
+import mc.Mitchellbrine.diseaseCraft.item.ItemRegistry;
 import mc.Mitchellbrine.diseaseCraft.json.DiseaseManager;
+import mc.Mitchellbrine.diseaseCraft.network.PacketHandler;
 import mc.Mitchellbrine.diseaseCraft.proxy.CommonProxy;
 import mc.Mitchellbrine.diseaseCraft.utils.ClassHelper;
 import mc.Mitchellbrine.diseaseCraft.utils.References;
@@ -121,6 +126,9 @@ public class DiseaseCraft {
 
 		registerAllEvents();
 		EntityRegistration.init();
+		ItemRegistry.init();
+		NetworkRegistry.INSTANCE.registerGuiHandler(DiseaseCraft.instance, new GuiHandler());
+		PacketHandler.init();
 
 	}
 
@@ -149,5 +157,4 @@ public class DiseaseCraft {
 		MinecraftForge.EVENT_BUS.register(new ContractingEvents());
 		FMLCommonHandler.instance().bus().register(new ContractingEvents());
 	}
-
 }
