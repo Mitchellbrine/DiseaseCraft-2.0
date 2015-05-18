@@ -225,3 +225,4 @@ SteamTech.ipr
 SteamTech.iws
 
 build.bat
+libs/**
