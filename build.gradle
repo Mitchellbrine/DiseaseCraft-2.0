@@ -18,6 +18,7 @@ buildscript {
 apply plugin: 'forge'
 
 version = "1.7.10-2.0"
+project.ext.neiVersion = "1.7.10-1.0.4.107"
 group= "mc.Mitchellbrine.diseaseCraft" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "DiseaseCraft"
 
@@ -45,6 +46,7 @@ repositories{
 }
 
 dependencies {
+    compile "codechicken:NotEnoughItems:${project.neiVersion}:dev"
     // you may put jars on which you depend on in ./libs
     // or you may define them like so..
     //compile "some.group:artifact:version:classifier"
