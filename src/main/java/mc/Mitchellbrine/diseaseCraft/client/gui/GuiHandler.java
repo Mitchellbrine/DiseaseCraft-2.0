@@ -2,7 +2,6 @@ package mc.Mitchellbrine.diseaseCraft.client.gui;
 
 import cpw.mods.fml.common.network.IGuiHandler;
 import mc.Mitchellbrine.diseaseCraft.containers.GuiBookContainer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
@@ -27,15 +26,6 @@ public class GuiHandler implements IGuiHandler {
 	public static class IDS {
 		public static final int JOURNAL = 0;
 		public static final int USER_JOURNAL = 1;
-	}
-
-	public static void openGui(int id, EntityPlayer player) {
-		System.out.println(id);
-		switch (id) {
-			case IDS.JOURNAL:
-				Minecraft.getMinecraft().displayGuiScreen(new GuiJournal(player));
-				break;
-		}
 	}
 
 }
