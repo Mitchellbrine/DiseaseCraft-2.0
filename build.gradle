@@ -92,3 +92,13 @@ task deobfJar(type: Jar) {
 artifacts {
 	archives deobfJar
 }
+
+jar{
+    manifest{
+        attributes(
+            "FMLCorePlugin" : "mc.Mitchellbrine.diseaseCraft.coremod.DCCoreMod",
+            "FMLCorePluginContainsFMLMod": "true"
+        )
+    }
+}
+
