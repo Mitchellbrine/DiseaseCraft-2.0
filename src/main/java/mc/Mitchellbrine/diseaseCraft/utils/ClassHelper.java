@@ -1,15 +1,21 @@
 package mc.Mitchellbrine.diseaseCraft.utils;
 
+import cpw.mods.fml.common.DummyModContainer;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.ModContainer;
+import cpw.mods.fml.common.ModMetadata;
 import cpw.mods.fml.common.discovery.ASMDataTable;
 import mc.Mitchellbrine.diseaseCraft.api.DCModule;
 import mc.Mitchellbrine.diseaseCraft.api.Module;
-import mc.Mitchellbrine.diseaseCraft.modules.ModuleWarfare;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.lang.reflect.Method;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -49,6 +55,10 @@ public class ClassHelper {
 		for (Class<?> clazz : modClasses) {
 			if (clazz.getAnnotation(DCModule.class) != null && Module.class.isAssignableFrom(clazz)) {
 					DCModule module = clazz.getAnnotation(DCModule.class);
+					if (getModule(module.id()) != null) {
+						logger.error("Module with the id \""+module.id()+"\" already exists, skipping module from package \"" + clazz.getPackage().getName() + "\"");
+						continue;
+					}
 					modules.put(module.id(),module);
 					try {
 						moduleMap.put(module, ((Class<? extends Module>) clazz).newInstance());
@@ -57,6 +67,67 @@ public class ClassHelper {
 					}
 			}
 		}
+
+		List<DCModule> requirementsNotMet = new ArrayList<DCModule>();
+
+		for (DCModule module : modules.values()) {
+			if (module.requiredModules().length == 0)
+				continue;
+			for (String require : module.requiredModules()) {
+				if (getModule(require) == null) {
+					requirementsNotMet.add(module);
+					break;
+				}
+		}
+		}
+
+		for (DCModule module : requirementsNotMet) {
+			modules.remove(module.id());
+			moduleMap.remove(module);
+		}
+
+		Map<String, DCModule> sortedModules = new HashMap<String, DCModule>(modules);
+		Map<DCModule, Module> sortedModuleMap = new HashMap<DCModule, Module>(moduleMap);
+
+		Map<DCModule, Module> addLater = new HashMap<DCModule, Module>();
+		List<DCModule> removeLater = new ArrayList<DCModule>();
+
+		for (DCModule module : sortedModules.values()) {
+			if (module.requiredModules().length == 0)
+				continue;
+			for (String id : module.requiredModules()) {
+				if (getModuleFromList(sortedModules.values(),id) == null) {
+					removeLater.add(module);
+					addLater.put(module,sortedModuleMap.get(module));
+				}
+			}
+		}
+
+		for (DCModule module : removeLater) {
+			sortedModules.remove(module.id());
+			sortedModuleMap.remove(module);
+
+			sortedModules.put(module.id(),module);
+			sortedModuleMap.put(module,addLater.get(module));
+		}
+
+		addLater.clear();
+		removeLater.clear();
+
+		List<ModContainer> fmlMods = getPrivateObject(Loader.instance(), "mods");
+		List<ModContainer> newMods = new ArrayList<ModContainer>();
+		newMods.addAll(fmlMods);
+		for (DCModule module : modules.values()) {
+			ModMetadata fakeMeta = new ModMetadata();
+			fakeMeta.modId = "DCMODULE" + module.id();
+			fakeMeta.name = "[DC] " + module.id().substring(0,1).toUpperCase() + module.id().substring(1);
+			fakeMeta.version = module.version();
+			fakeMeta.description = module.description().isEmpty() ? "A module for DiseaseCraft" : module.description();
+			fakeMeta.parent = "DiseaseCraft";
+			newMods.add(new DummyMod(fakeMeta));
+		}
+		setPrivateObject(Loader.instance(), newMods, "mods");
+
 
 		for (DCModule module : modules.values()) {
 			logger.info("Loaded module " + module.id() + " from " + module.modid() + " for DC version " + module.dcVersion());
@@ -92,6 +163,51 @@ public class ClassHelper {
 				return modules.get(module);
 		}
 		return null;
+	}
+
+	public static DCModule getModuleFromList(Collection<DCModule> modules, String id) {
+		for (DCModule module : modules) {
+			if (module.id().equals(id))
+				return module;
+		}
+		return null;
+	}
+
+	public static <T> T getPrivateObject(Object object, String... names) {
+		Class<?> cls = object.getClass();
+		for (String name : names) {
+			try {
+				Field field = cls.getDeclaredField(name);
+				field.setAccessible(true);
+				return (T) field.get(object);
+			} catch (Exception ex) {
+
+			}
+		}
+
+		return null;
+	}
+
+	public static boolean setPrivateObject(Object object, Object value, String... names) {
+		Class<?> cls = object.getClass();
+		for (String name : names) {
+			try {
+				Field field = cls.getDeclaredField(name);
+				field.setAccessible(true);
+				field.set(object, value);
+				return true;
+			} catch (Exception ex) {
+
+			}
+		}
+
+		return false;
+	}
+
+	private static class DummyMod extends DummyModContainer {
+		public DummyMod(ModMetadata meta) {
+			super(meta);
+		}
 	}
 
 }

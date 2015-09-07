@@ -14,7 +14,7 @@ import net.minecraftforge.common.MinecraftForge;
 /**
  * Created by Mitchellbrine on 2015.
  */
-@DCModule(id = "bioWarfare",modid = "DiseaseCraft",dcVersion = References.VERSION, canBeDisabled = true)
+@DCModule(id = "bioWarfare",modid = "DiseaseCraft",version = "1.0",dcVersion = References.VERSION, canBeDisabled = true)
 public class ModuleWarfare extends Module {
 
 	public static CreativeTabs tab;

@@ -145,14 +145,13 @@ public class ContractingEvents {
 			double biggestDouble = 2.0;
 			for (DCVersion version : VersionJSON.versions) {
 				if (version.mcVersion == Double.parseDouble(MinecraftForge.MC_VERSION.substring(MinecraftForge.MC_VERSION.indexOf(".") + 1))) {
-					System.out.println(Double.parseDouble(MinecraftForge.MC_VERSION.substring(MinecraftForge.MC_VERSION.indexOf(".") + 1)));
 					if (version.versionNumber > biggestDouble) {
 						biggestDouble = version.versionNumber;
 					}
 				}
 			}
 			event.player.addChatComponentMessage(new ChatComponentTranslation("disease.update.new", biggestDouble));
-			event.player.addChatComponentMessage(new ChatComponentText(VersionJSON.getVersion(biggestDouble).updateString));
+			event.player.addChatComponentMessage(new ChatComponentText(VersionJSON.getVersion(biggestDouble) != null ? VersionJSON.getVersion(biggestDouble).updateString : "[ERROR: Changelog not available]"));
 		}
 	}
 

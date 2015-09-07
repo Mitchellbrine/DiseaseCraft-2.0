@@ -13,6 +13,7 @@ import mc.Mitchellbrine.diseaseCraft.event.ContractingEvents;
 import mc.Mitchellbrine.diseaseCraft.item.ItemRegistry;
 import mc.Mitchellbrine.diseaseCraft.json.DiseaseManager;
 import mc.Mitchellbrine.diseaseCraft.network.PacketHandler;
+import mc.Mitchellbrine.diseaseCraft.packs.DiseasePackManager;
 import mc.Mitchellbrine.diseaseCraft.proxy.CommonProxy;
 import mc.Mitchellbrine.diseaseCraft.utils.ClassHelper;
 import mc.Mitchellbrine.diseaseCraft.utils.References;
@@ -27,6 +28,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 /**
  * Created by Mitchellbrine on 2015.
@@ -43,6 +47,8 @@ public class DiseaseCraft {
 	public static boolean shouldUpdate = false;
 
 	public static final double MC_VERSION = 7.10;
+
+	public static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
 	@Mod.Instance
 	public static DiseaseCraft instance;
@@ -121,6 +127,12 @@ public class DiseaseCraft {
 
 		DiseaseManager.findAllDiseases();
 
+		/**
+		 * Here we go! This is where we will register our disease packs!
+		 */
+
+		DiseasePackManager.findAllPacks();
+
 		ConfigRegistry.STATE = 0;
 		ConfigRegistry.triggerState();
 
@@ -135,6 +147,7 @@ public class DiseaseCraft {
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
 		ConfigRegistry.triggerState();
+
 	}
 
 	@Mod.EventHandler

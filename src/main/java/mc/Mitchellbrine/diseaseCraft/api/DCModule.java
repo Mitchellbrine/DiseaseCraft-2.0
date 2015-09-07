@@ -18,8 +18,14 @@ public @interface DCModule {
 
 	String dcVersion();
 
+	String version();
+
+	String description() default "";
+
 	boolean canBeDisabled() default false;
 
 	boolean isEnabled() default true;
+
+	String[] requiredModules() default {};
 
 }
