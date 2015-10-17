@@ -4,6 +4,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mc.Mitchellbrine.diseaseCraft.api.Disease;
+import mc.Mitchellbrine.diseaseCraft.disease.BloodTypeHelper;
 import mc.Mitchellbrine.diseaseCraft.disease.DiseaseHelper;
 import mc.Mitchellbrine.diseaseCraft.disease.Diseases;
 import mc.Mitchellbrine.diseaseCraft.modules.ModuleWarfare;
@@ -18,6 +19,9 @@ import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
@@ -48,10 +52,16 @@ public class ChemicalExtractor extends Item {
 			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("disease") && entity instanceof EntityLivingBase) {
 				String id = stack.getTagCompound().getString("disease");
 				DiseaseHelper.addDisease((EntityLivingBase)entity,DiseaseHelper.getDiseaseInstance(id));
-				stack.setTagCompound(new NBTTagCompound());
-				stack.setItemDamage(0);
-				return true;
+			} else if (stack.getTagCompound().hasKey("diseases",9) && stack.getTagCompound().getTagList("diseases",8).tagCount() > 0 && entity instanceof EntityLivingBase) {
+				for (int i = 0; i < stack.getTagCompound().getTagList("diseases",8).tagCount();i++) {
+					if ((entity instanceof EntityPlayer && BloodTypeHelper.isCompatible(BloodTypeHelper.getBloodType(stack.getTagCompound().getString("blood")),entity.getEntityData().getCompoundTag(((EntityPlayer)entity).PERSISTED_NBT_TAG).getString("bloodType"))) || !(entity instanceof EntityPlayer)) {
+						DiseaseHelper.addDisease((EntityLivingBase) entity, DiseaseHelper.getDiseaseInstance(stack.getTagCompound().getTagList("diseases", 8).getStringTagAt(i)));
+					}
+				}
 			}
+			stack.setTagCompound(new NBTTagCompound());
+			stack.setItemDamage(0);
+			return true;
 		}
 		return false;
 	}
@@ -73,8 +83,28 @@ public class ChemicalExtractor extends Item {
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List lore, boolean par4)
 	{
-		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("disease") && DiseaseHelper.diseaseExists(stack.getTagCompound().getString("disease"))) {
-			lore.add("Disease: " + StatCollector.translateToLocal(Diseases.getDiseaseName(stack.getTagCompound().getString("disease"))));
+		if (stack.hasTagCompound()) {
+			if (stack.getTagCompound().hasKey("disease") && DiseaseHelper.diseaseExists(stack.getTagCompound().getString("disease"))) {
+				lore.add("Disease: " + StatCollector.translateToLocal(Diseases.getDiseaseName(stack.getTagCompound().getString("disease"))));
+			}
+			if (stack.getTagCompound().hasKey("blood")) {
+				lore.add("Blood Sample from: " + stack.getTagCompound().getString("blood"));
+				if (!BloodTypeHelper.getBloodType(stack.getTagCompound().getString("blood")).equalsIgnoreCase("missingno")) {
+					lore.add("Blood Type from Sample: " + BloodTypeHelper.getBloodType(stack.getTagCompound().getString("blood")));
+				}
+			}
+			if (stack.getTagCompound().hasKey("diseases",9) && stack.getTagCompound().getTagList("diseases",8).tagCount() > 0) {
+				lore.add("Bacteria found in blood sample:");
+				for (int i = 0; i < stack.getTagCompound().getTagList("diseases",8).tagCount();i++) {
+					if (DiseaseHelper.diseaseExists(stack.getTagCompound().getTagList("diseases",8).getStringTagAt(i))) {
+						if (player.getEntityData().getCompoundTag(player.PERSISTED_NBT_TAG).hasKey(DiseaseHelper.getDiseaseInstance(stack.getTagCompound().getTagList("diseases",8).getStringTagAt(i)).getUnlocalizedName().replaceAll(".name",".complete")) && player.getEntityData().getCompoundTag(player.PERSISTED_NBT_TAG).getBoolean(DiseaseHelper.getDiseaseInstance(stack.getTagCompound().getTagList("diseases",8).getStringTagAt(i)).getUnlocalizedName().replaceAll(".name",".complete"))) {
+							lore.add("- " + StatCollector.translateToLocal(DiseaseHelper.getDiseaseInstance(stack.getTagCompound().getTagList("diseases", 8).getStringTagAt(i)).getUnlocalizedName()));
+						} else {
+							lore.add("- " + EnumChatFormatting.OBFUSCATED + StatCollector.translateToLocal(DiseaseHelper.getDiseaseInstance(stack.getTagCompound().getTagList("diseases", 8).getStringTagAt(i)).getUnlocalizedName()));
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -123,9 +153,28 @@ public class ChemicalExtractor extends Item {
 	@Override
 	public ItemStack onEaten(ItemStack itemstack, World world, EntityPlayer player) {
 		if (itemstack.getItemDamage() > 0) {
-			if (itemstack.hasTagCompound() && itemstack.getTagCompound().hasKey("disease") && DiseaseHelper.diseaseExists(itemstack.getTagCompound().getString("disease"))) {
-				DiseaseHelper.addDisease(player,DiseaseHelper.getDiseaseInstance(itemstack.getTagCompound().getString("disease")));
+			if (itemstack.hasTagCompound()) {
+				if (itemstack.getTagCompound().hasKey("disease") && DiseaseHelper.diseaseExists(itemstack.getTagCompound().getString("disease"))) {
+					DiseaseHelper.addDisease(player, DiseaseHelper.getDiseaseInstance(itemstack.getTagCompound().getString("disease")));
+				}
+				if (itemstack.getTagCompound().hasKey("diseases",9)) {
+					for (int i = 0; i < itemstack.getTagCompound().getTagList("diseases",8).tagCount();i++) {
+						if (DiseaseHelper.diseaseExists(itemstack.getTagCompound().getTagList("diseases",8).getStringTagAt(i))) {
+							DiseaseHelper.addDisease(player, DiseaseHelper.getDiseaseInstance(itemstack.getTagCompound().getTagList("diseases",8).getStringTagAt(i)));
+						}
+					}
+				}
+				itemstack.setTagCompound(new NBTTagCompound());
+				itemstack.setItemDamage(0);
 			}
+		} else {
+			itemstack.getTagCompound().setString("blood",player.getCommandSenderName());
+			NBTTagList list = new NBTTagList();
+			for (Disease disease : DiseaseHelper.getActiveDiseases(player)) {
+				list.appendTag(new NBTTagString(disease.getId()));
+			}
+			itemstack.getTagCompound().setTag("diseases",list);
+			itemstack.setItemDamage(1);
 		}
 		return itemstack;
 	}
@@ -133,9 +182,7 @@ public class ChemicalExtractor extends Item {
 	@Override
 	public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
 	{
-		if (par1ItemStack.getItemDamage() > 0) {
-			par3EntityPlayer.setItemInUse(par1ItemStack, this.getMaxItemUseDuration(par1ItemStack));
-		}
+		par3EntityPlayer.setItemInUse(par1ItemStack, this.getMaxItemUseDuration(par1ItemStack));
 		return par1ItemStack;
 	}
 

@@ -2,6 +2,7 @@ package mc.Mitchellbrine.diseaseCraft.event;
 
 import com.google.gson.JsonPrimitive;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
+import cpw.mods.fml.common.registry.GameData;
 import mc.Mitchellbrine.diseaseCraft.api.Disease;
 import mc.Mitchellbrine.diseaseCraft.api.DiseaseEvent;
 import mc.Mitchellbrine.diseaseCraft.dio.DCVersion;
@@ -145,14 +146,13 @@ public class ContractingEvents {
 			double biggestDouble = 2.0;
 			for (DCVersion version : VersionJSON.versions) {
 				if (version.mcVersion == Double.parseDouble(MinecraftForge.MC_VERSION.substring(MinecraftForge.MC_VERSION.indexOf(".") + 1))) {
-					System.out.println(Double.parseDouble(MinecraftForge.MC_VERSION.substring(MinecraftForge.MC_VERSION.indexOf(".") + 1)));
 					if (version.versionNumber > biggestDouble) {
 						biggestDouble = version.versionNumber;
 					}
 				}
 			}
 			event.player.addChatComponentMessage(new ChatComponentTranslation("disease.update.new", biggestDouble));
-			event.player.addChatComponentMessage(new ChatComponentText(VersionJSON.getVersion(biggestDouble).updateString));
+			event.player.addChatComponentMessage(new ChatComponentText(VersionJSON.getVersion(biggestDouble) != null ? VersionJSON.getVersion(biggestDouble).updateString : "[ERROR: Changelog not available]"));
 		}
 	}
 
@@ -163,11 +163,17 @@ public class ContractingEvents {
 				for (Disease disease : Diseases.diseases) {
 					if (disease.getWaysToContract() != null && disease.getWaysToContract().contains("eaten")) {
 						if (disease.getParameters("eaten") != null) {
-							int itemID = ((JsonPrimitive) disease.getParameters("eaten")[0]).getAsInt();
+							//event.item.getItem() == Item.getItemById(itemID) &&
+							int itemID = -1;
+							if (isInteger(((JsonPrimitive)disease.getParameters("eaten")[0]).getAsString())) {
+								itemID = ((JsonPrimitive) disease.getParameters("eaten")[0]).getAsInt();
+							}
 							int itemDamage = ((JsonPrimitive) disease.getParameters("eaten")[1]).getAsInt();
 							int randomChance = ((JsonPrimitive) disease.getParameters("eaten")[2]).getAsInt();
-							if (event.item.getItem() == Item.getItemById(itemID) && event.item.getItemDamage() == itemDamage && GenericEffects.rand.nextInt(1000000) > randomChance) {
-								DiseaseHelper.addDisease(event.entityLiving, disease);
+							if ((itemID != -1 && event.item.getItem() == Item.getItemById(itemID)) || (GameData.getItemRegistry().getObject(((JsonPrimitive) disease.getParameters("eaten")[0]).getAsString().replaceAll("\"", "")) != null && event.item.getItem() == GameData.getItemRegistry().getObject(((String) disease.getParameters("eaten")[0]).replaceAll("\"", "")))) {
+								if (event.item.getItemDamage() == itemDamage && GenericEffects.rand.nextInt(1000000) > randomChance) {
+									DiseaseHelper.addDisease(event.entityLiving, disease);
+								}
 							}
 						}
 					}
@@ -190,5 +196,14 @@ public class ContractingEvents {
 				PacketHandler.INSTANCE.sendTo(new NBTPacket(player.PERSISTED_NBT_TAG,player.getEntityData().getCompoundTag(player.PERSISTED_NBT_TAG)),(EntityPlayerMP)player.worldObj.getClosestPlayer(player.posX,player.posY,player.posZ,10));
 			}
 		}
+	}
+
+	boolean isInteger(String intString) {
+		try {
+			Integer.parseInt(intString);
+		} catch(Exception ex) {
+			return false;
+		}
+		return true;
 	}
 }

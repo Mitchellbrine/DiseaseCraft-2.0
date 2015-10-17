@@ -36,7 +36,7 @@ public class GuiJournal extends GuiBook {
 				if (disease.isJoke() || !disease.isVanilla())
 					continue;
 				GuiTab tab = new GuiDiseaseTab(getTabAmount(), disease);
-				if (tab.isEnabled(this, super.player)) {
+				if (ConfigRegistry.diseaseProgression == 1 && tab.isEnabled(this, super.player)) {
 					addTab(tab);
 				}
 			}
@@ -47,7 +47,7 @@ public class GuiJournal extends GuiBook {
 					if ((disease.isJoke() && ConfigRegistry.journalLevel == 0) || (!disease.isJoke() && ConfigRegistry.journalLevel == 1))
 						continue;
 					GuiTab tab = new GuiDiseaseTab(getTabAmount(),disease);
-					if (tab.isEnabled(this,super.player)) {
+					if (ConfigRegistry.diseaseProgression == 1 && tab.isEnabled(this,super.player)) {
 						addTab(tab);
 					}
 				} else {

@@ -27,6 +27,8 @@ public class ConfigRegistry {
 	public static boolean autoUpdate;
 	public static String[] userDiseases;
 	public static int journalLevel;
+	public static int diseaseProgression;
+	public static boolean useNativeDiseases;
 
 	public static Logger logger = LogManager.getLogger("DiseaseCraft-Config");
 
@@ -89,9 +91,11 @@ public class ConfigRegistry {
 
 		config.load();
 
-		autoUpdate = config.get(Configuration.CATEGORY_GENERAL,"autoUpdate",true,"Auto-download disease patches").getBoolean(true);
-		userDiseases = config.getStringList("userDiseases",Configuration.CATEGORY_GENERAL,new String[]{},"The diseases that go in the user medical journal");
+		autoUpdate = config.get(Configuration.CATEGORY_GENERAL,"autoUpdate",false,"Auto-download disease patches\n\nIf you want to get the latest version of the diseases, download them at https://github.com/Mitchellbrine/DiseaseCraft-2.0/blob/master/diseaseJSON/").getBoolean(false);
+		userDiseases = config.getStringList("userDiseases", Configuration.CATEGORY_GENERAL,new String[]{},"The diseases that go in the user medical journal");
 		journalLevel = config.getInt("journalLevel",Configuration.CATEGORY_GENERAL,0,0,1,"Specify which diseases appear in journals\n\n0 = Regular Diseases\n1 = Joke Diseases\n\n");
+		diseaseProgression = config.getInt("diseaseProgression",Configuration.CATEGORY_GENERAL,0,0,1,"Should journals hide diseases until player retreives them?");
+		useNativeDiseases = config.getBoolean("useNativeJSON",Configuration.CATEGORY_GENERAL,true,"Loads the JSON file located within the jar of the mod");
 
 		config.save();
 

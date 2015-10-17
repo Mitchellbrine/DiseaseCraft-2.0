@@ -3,17 +3,23 @@ package mc.Mitchellbrine.diseaseCraft.disease.effects;
 import mc.Mitchellbrine.diseaseCraft.DiseaseCraft;
 import mc.Mitchellbrine.diseaseCraft.api.Disease;
 import mc.Mitchellbrine.diseaseCraft.api.DiseaseEvent;
+import mc.Mitchellbrine.diseaseCraft.disease.DiseaseHelper;
 import mc.Mitchellbrine.diseaseCraft.disease.Diseases;
+import mc.Mitchellbrine.diseaseCraft.utils.References;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.MinecraftForge;
 
+import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Mitchellbrine on 2015.
@@ -99,6 +105,43 @@ public class GenericEffects {
 		if (player.getEntityData().hasKey(disease.getUnlocalizedName().replaceAll(".name", "")) && player.getEntityData().getInteger(disease.getUnlocalizedName().replaceAll(".name", "")) == 1) {
 			if (rand.nextInt(100) <= disease.getDeathRate()) {
 				player.attackEntityFrom(illness, 1000000F);
+			}
+		}
+	}
+
+	public static void coughing(EntityLivingBase player, Disease disease) {
+		if (player.worldObj.getTotalWorldTime() % 160 == 0) {
+			player.worldObj.playSoundAtEntity(player,References.MODID.toLowerCase() + ":cough",MathHelper.getRandomIntegerInRange(rand,3,7),1F);
+			player.attackEntityFrom(illness, 2F);
+		}
+	}
+
+	public static void sneezing(final EntityLivingBase player, Disease disease) {
+		if (player instanceof EntityPlayer && rand.nextInt(500) == 0) {
+			AxisAlignedBB bounds = ((EntityPlayer) player).boundingBox.expand(2, 0, 2);
+			List<Entity> contagions = player.worldObj.getEntitiesWithinAABBExcludingEntity(player, bounds);
+
+			player.worldObj.playSoundAtEntity(player, References.MODID.toLowerCase() + ":sneeze", MathHelper.getRandomIntegerInRange(rand,5,10), 0F);
+
+			System.out.println("Sneeze!");
+
+			DiseaseCraft.scheduler.schedule(new Runnable() {
+				@Override
+				public void run() {
+					for (int xx = (int)((EntityPlayer) player).posX - 2;xx <= (int)((EntityPlayer) player).posX + 2;xx++) {
+						for (int zz = (int)((EntityPlayer) player).posZ - 2;zz <= (int)((EntityPlayer) player).posZ + 2;zz++) {
+							((EntityPlayer) player).worldObj.spawnParticle("slime",xx,((EntityPlayer) player).posY + 0.5,zz,0,.5,0);
+						}
+					}
+				}
+			}, 500, TimeUnit.MILLISECONDS);
+
+
+
+			for (Entity entity : contagions) {
+				if (entity instanceof EntityLivingBase) {
+					DiseaseHelper.addDisease((EntityLivingBase) entity, disease);
+				}
 			}
 		}
 	}
