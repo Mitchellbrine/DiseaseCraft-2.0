@@ -3,6 +3,9 @@ package mc.Mitchellbrine.diseaseCraft.disease;
 import mc.Mitchellbrine.diseaseCraft.api.Disease;
 import net.minecraft.entity.EntityLivingBase;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Mitchellbrine on 2015.
  */
@@ -42,6 +45,15 @@ public class DiseaseHelper {
 				return disease;
 		}
 		return null;
+	}
+
+	public static List<Disease> getActiveDiseases(EntityLivingBase entity) {
+		List<Disease> actives = new ArrayList<Disease>();
+		for (Disease disease : Diseases.diseases) {
+			if (isDiseaseActive(entity,disease))
+				actives.add(disease);
+		}
+		return actives;
 	}
 
 }

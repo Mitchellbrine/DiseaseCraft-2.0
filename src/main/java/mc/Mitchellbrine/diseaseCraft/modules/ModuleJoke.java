@@ -10,7 +10,7 @@ import net.minecraftforge.common.MinecraftForge;
 /**
  * Created by Mitchellbrine on 2015.
  */
-@DCModule(id = "jokeDisease",modid = "DiseaseCraft",dcVersion = "2.0",canBeDisabled = true,isEnabled = false)
+@DCModule(id = "jokeDisease",modid = "DiseaseCraft",dcVersion = "2.0",version = "1.0",canBeDisabled = true,isEnabled = false)
 public class ModuleJoke extends Module{
 
 	public static DamageSource shrekDamage = new DamageSource("shrek").setDamageBypassesArmor().setDifficultyScaled();

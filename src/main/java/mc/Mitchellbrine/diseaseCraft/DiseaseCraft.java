@@ -1,9 +1,9 @@
 package mc.Mitchellbrine.diseaseCraft;
 
-import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.relauncher.FMLInjectionData;
 import mc.Mitchellbrine.diseaseCraft.client.gui.GuiHandler;
 import mc.Mitchellbrine.diseaseCraft.config.ConfigRegistry;
 import mc.Mitchellbrine.diseaseCraft.dio.DiseaseDownloader;
@@ -26,7 +26,9 @@ import net.minecraftforge.common.config.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.lang.reflect.Method;
+import java.io.File;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 /**
  * Created by Mitchellbrine on 2015.
@@ -39,6 +41,8 @@ public class DiseaseCraft {
 	public static CommonProxy proxy;
 
 	public static Logger logger = LogManager.getLogger(References.MODID);
+
+	public static ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1);
 
 	public static boolean shouldUpdate = false;
 
@@ -61,14 +65,13 @@ public class DiseaseCraft {
 	 */
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-
-		ConfigRegistry.init(event.getModConfigurationDirectory());
+		ConfigRegistry.init(new File((FMLInjectionData.data()[6]) + File.separator + "config" + File.separator));
 		ConfigRegistry.doConfig(new Configuration(event.getSuggestedConfigurationFile()));
 
 
 		proxy.registerStuff();
 
-		if (DiseaseCraft.shouldUpdate && ConfigRegistry.autoUpdate) {
+		if (!ConfigRegistry.useNativeDiseases && DiseaseCraft.shouldUpdate && ConfigRegistry.autoUpdate) {
 			DiseaseDownloader.init();
 		}
 
@@ -156,5 +159,7 @@ public class DiseaseCraft {
 	private void registerAllEvents() {
 		MinecraftForge.EVENT_BUS.register(new ContractingEvents());
 		FMLCommonHandler.instance().bus().register(new ContractingEvents());
+		MinecraftForge.ORE_GEN_BUS.register(new ContractingEvents());
+		MinecraftForge.TERRAIN_GEN_BUS.register(new ContractingEvents());
 	}
 }
