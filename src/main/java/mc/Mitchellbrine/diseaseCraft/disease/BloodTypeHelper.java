@@ -2,11 +2,13 @@ package mc.Mitchellbrine.diseaseCraft.disease;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import mc.Mitchellbrine.diseaseCraft.DiseaseCraft;
+import mc.Mitchellbrine.diseaseCraft.api.Disease;
 import mc.Mitchellbrine.diseaseCraft.network.NBTPacket;
 import mc.Mitchellbrine.diseaseCraft.network.PacketHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.world.WorldEvent;
@@ -167,7 +169,39 @@ public class BloodTypeHelper {
 		return bloodTypes.containsKey(name) ? bloodTypes.get(name) : "missingno";
 	}
 
+	public static void setBloodType(String player2, String bloodType) {
+		bloodTypes.put(player2, bloodType);
+		if (MinecraftServer.getServer().getEntityWorld().getPlayerEntityByName(player2) != null) {
+			EntityPlayer player = MinecraftServer.getServer().getEntityWorld().getPlayerEntityByName(player2);
+			if (!player.getEntityData().hasKey(player.PERSISTED_NBT_TAG)) {
+				player.getEntityData().setTag(player.PERSISTED_NBT_TAG,new NBTTagCompound());
+				player.getEntityData().getCompoundTag(player.PERSISTED_NBT_TAG).setString("bloodType", bloodType);
+			}
+		}
+	}
+
 	public static boolean isCompatible(String donor, String receiver) {
+		if (donor.equalsIgnoreCase("O-")) {
+			return true;
+		} else if (donor.equalsIgnoreCase("O+")) {
+			return receiver.endsWith("+");
+		} else if (donor.equalsIgnoreCase("B-")) {
+			return receiver.contains("B");
+		} else if (donor.equalsIgnoreCase("B+")) {
+			return receiver.contains("B") && receiver.endsWith("+");
+		} else if (donor.equalsIgnoreCase("A-")) {
+			return receiver.contains("A");
+		} else if (donor.equalsIgnoreCase("A+")) {
+			return receiver.contains("A") && receiver.endsWith("+");
+		} else if (donor.equalsIgnoreCase("AB-")) {
+			return receiver.contains("AB");
+		} else {
+			return receiver.equals(donor);
+		}
+	}
+
+	public static boolean isCompatible(Disease disease, String receiver) {
+		String donor = disease.getBloodType();
 		if (donor.equalsIgnoreCase("O-")) {
 			return true;
 		} else if (donor.equalsIgnoreCase("O+")) {

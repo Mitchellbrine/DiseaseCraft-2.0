@@ -34,6 +34,7 @@ public class Diseases {
 		addMode(-4, "mc.Mitchellbrine.diseaseCraft.disease.effects.GenericEffects", "death");
 		addMode(-5, "mc.Mitchellbrine.diseaseCraft.disease.effects.GenericEffects", "coughing");
 		addMode(-6, "mc.Mitchellbrine.diseaseCraft.disease.effects.GenericEffects", "sneezing");
+		addMode(-7, "mc.Mitchellbrine.diseaseCraft.disease.effects.GenericEffects", "brainReanimation");
 
 		MinecraftForge.EVENT_BUS.register(new BloodTypeHelper());
 		FMLCommonHandler.instance().bus().register(new BloodTypeHelper());

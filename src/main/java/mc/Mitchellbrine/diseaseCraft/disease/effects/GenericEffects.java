@@ -146,4 +146,8 @@ public class GenericEffects {
 		}
 	}
 
+	public static void brainReanimation(final EntityLivingBase player, Disease disease) {
+
+	}
+
 }

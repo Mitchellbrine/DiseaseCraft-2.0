@@ -79,7 +79,7 @@ public class MedUtils {
 		}
 	}
 
-	@SubscribeEvent
+
 	public void painKiller(LivingAttackEvent event) {
 		if (event.entityLiving instanceof EntityPlayer) {
 			System.out.println("Hurt event called!");

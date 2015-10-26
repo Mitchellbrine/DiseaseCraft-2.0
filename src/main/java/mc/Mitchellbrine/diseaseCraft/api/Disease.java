@@ -29,6 +29,8 @@ public class Disease {
 
 	private boolean isJoke, isVanilla;
 
+	public String bloodType;
+
 	public Disease(String id) {
 		this.domain = "DiseaseCraft";
 		this.identifier = id;
@@ -148,4 +150,9 @@ public class Disease {
 	public void setLore(String string) {
 		this.lore = string;
 	}
+
+	public String getBloodType() { return this.bloodType; }
+
+	public void setBloodType(String string) { this.bloodType = string; }
+
 }

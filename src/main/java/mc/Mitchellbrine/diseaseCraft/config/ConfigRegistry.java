@@ -29,6 +29,11 @@ public class ConfigRegistry {
 	public static int journalLevel;
 	public static int diseaseProgression;
 	public static boolean useNativeDiseases;
+	public static int diseasedPlantsChance;
+
+	public static boolean useTempCompat;
+	public static String tempTag;
+	public static float baseTemp;
 
 	public static Logger logger = LogManager.getLogger("DiseaseCraft-Config");
 
@@ -94,8 +99,13 @@ public class ConfigRegistry {
 		autoUpdate = config.get(Configuration.CATEGORY_GENERAL,"autoUpdate",false,"Auto-download disease patches\n\nIf you want to get the latest version of the diseases, download them at https://github.com/Mitchellbrine/DiseaseCraft-2.0/blob/master/diseaseJSON/").getBoolean(false);
 		userDiseases = config.getStringList("userDiseases", Configuration.CATEGORY_GENERAL,new String[]{},"The diseases that go in the user medical journal");
 		journalLevel = config.getInt("journalLevel",Configuration.CATEGORY_GENERAL,0,0,1,"Specify which diseases appear in journals\n\n0 = Regular Diseases\n1 = Joke Diseases\n\n");
-		diseaseProgression = config.getInt("diseaseProgression",Configuration.CATEGORY_GENERAL,0,0,1,"Should journals hide diseases until player retreives them?");
+		diseaseProgression = config.getInt("diseaseProgression",Configuration.CATEGORY_GENERAL,0,0,1,"Should journals hide diseases until player retrieves them?");
 		useNativeDiseases = config.getBoolean("useNativeJSON",Configuration.CATEGORY_GENERAL,true,"Loads the JSON file located within the jar of the mod");
+		diseasedPlantsChance = config.getInt("diseasedPlantsChance",Configuration.CATEGORY_GENERAL,2,0,100,"The chance that a plant will become diseased (calculated every 2 seconds when within 5x5x5)");
+
+		useTempCompat = config.getBoolean("useTempCompat","compat",false,"Use another mod to calculate temperature or to store temperature. This removes cross mod incompatibilities");
+		tempTag = config.getString("temperatureTag","compat","","Sets which temperature tag is used for calculating temperature (for example \"bodyTemp\" from Enviromine");
+		baseTemp = config.getFloat("baseTemperature","compat",1.0f,Float.MIN_VALUE,Float.MAX_VALUE,"Sets which double to multiply by to accurately account for the diseases in-game (for example 37 degrees Celsius is a regular body temperature and could be used");
 
 		config.save();
 

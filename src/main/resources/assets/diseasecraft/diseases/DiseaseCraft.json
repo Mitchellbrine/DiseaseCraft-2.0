@@ -34,8 +34,8 @@
       {
         "type":"mobAttack",
         "parameters":[
-          "Wolf",
-          700000
+          700000,
+          "Wolf"
         ]
       }
     ],
@@ -124,9 +124,9 @@
       {
       "type":"mob",
       "parameters":[
-        "DiseaseCraft.rat",
         3,
-        999000
+        999000,
+        "DiseaseCraft.rat"
       ]
       }
     ],
@@ -166,9 +166,9 @@
       {
         "type":"mob",
         "parameters":[
-          "EntityHorse",
 		  2,
-          750000
+          750000,
+          "EntityHorse"
         ]
       }
     ],

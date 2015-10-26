@@ -159,5 +159,7 @@ public class DiseaseCraft {
 	private void registerAllEvents() {
 		MinecraftForge.EVENT_BUS.register(new ContractingEvents());
 		FMLCommonHandler.instance().bus().register(new ContractingEvents());
+		MinecraftForge.ORE_GEN_BUS.register(new ContractingEvents());
+		MinecraftForge.TERRAIN_GEN_BUS.register(new ContractingEvents());
 	}
 }

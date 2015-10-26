@@ -5,6 +5,7 @@ import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import mc.Mitchellbrine.diseaseCraft.api.Disease;
 import mc.Mitchellbrine.diseaseCraft.api.DiseaseTabEvent;
+import mc.Mitchellbrine.diseaseCraft.config.ConfigRegistry;
 import mc.Mitchellbrine.diseaseCraft.disease.Diseases;
 import mc.Mitchellbrine.diseaseCraft.modules.ModuleWarfare;
 import mc.Mitchellbrine.diseaseCraft.utils.ClassHelper;
@@ -176,7 +177,7 @@ public class GuiDiseaseTab extends GuiTab {
 	@Override
 	public boolean isEnabled(GuiBook book, EntityPlayer player) {
 		//System.out.println(disease.getUnlocalizedName().replaceAll(".name",".complete") + " | " + player.getEntityData().hasKey(player.PERSISTED_NBT_TAG, 10) + " | " + player.getEntityData().getCompoundTag(player.PERSISTED_NBT_TAG).hasKey(disease.getUnlocalizedName().replaceAll(".name", ".complete")) + " | " + player.getEntityData().getCompoundTag(player.PERSISTED_NBT_TAG).getBoolean(disease.getUnlocalizedName().replaceAll(".name",".complete")));
-		return player.getEntityData().getCompoundTag(player.PERSISTED_NBT_TAG).hasKey(disease.getUnlocalizedName().replaceAll(".name",".complete")) && player.getEntityData().getCompoundTag(player.PERSISTED_NBT_TAG).getBoolean(disease.getUnlocalizedName().replaceAll(".name",".complete"));
+		return ConfigRegistry.diseaseProgression == 0 || (player.getEntityData().getCompoundTag(player.PERSISTED_NBT_TAG).hasKey(disease.getUnlocalizedName().replaceAll(".name",".complete")) && player.getEntityData().getCompoundTag(player.PERSISTED_NBT_TAG).getBoolean(disease.getUnlocalizedName().replaceAll(".name",".complete")));
 	}
 
 	@Override

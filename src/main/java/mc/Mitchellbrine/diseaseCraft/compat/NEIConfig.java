@@ -10,7 +10,6 @@ public class NEIConfig implements codechicken.nei.api.IConfigureNEI {
 
 	@Optional.Method(modid = "NotEnoughItems")
 	public void loadConfig() {
-
 	}
 
 	public String getName() {

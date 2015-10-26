@@ -42,7 +42,8 @@ public class ItemMedication extends Item {
 	@Override
 	public ItemStack onEaten(ItemStack stack, World world, EntityPlayer player) {
 		MedUtils.applyEffect(player,stack.getTagCompound());
-		stack = new ItemStack(Items.glass_bottle);
+		if (!player.capabilities.isCreativeMode)
+			stack = new ItemStack(Items.glass_bottle);
 		return stack;
 	}
 
