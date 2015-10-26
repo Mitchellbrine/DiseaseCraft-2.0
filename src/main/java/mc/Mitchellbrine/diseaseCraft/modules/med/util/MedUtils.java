@@ -4,12 +4,9 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import mc.Mitchellbrine.diseaseCraft.api.DiseaseEvent;
 import mc.Mitchellbrine.diseaseCraft.modules.med.recipe.MedicationRecipes;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 /**
  * Created by Mitchellbrine on 2015.
@@ -60,19 +57,6 @@ public class MedUtils {
 				if (newMeds > 24000) {
 					event.entityLiving.attackEntityFrom(medication,1.0F);
 				}
-			}
-		}
-	}
-
-	@SubscribeEvent
-	public void painKiller(LivingAttackEvent event) {
-		if (event.entityLiving instanceof EntityPlayer) {
-			System.out.println("Hurt event called!");
-			if (event.ammount > event.entityLiving.getHealth()) {
-				event.setCanceled(false);
-			} else {
-				event.entityLiving.setHealth(event.entityLiving.getHealth() - event.ammount);
-				event.setCanceled(true);
 			}
 		}
 	}

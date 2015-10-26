@@ -27,6 +27,7 @@ public class ItemMedication extends Item {
 		this.setTextureName(References.MODID + ":medication");
 		this.setMaxStackSize(1);
 		this.setHasSubtypes(true);
+		GameRegistry.registerItem(this,"medication");
 	}
 
 	@Override
@@ -65,12 +66,6 @@ public class ItemMedication extends Item {
 				lore.add(EnumChatFormatting.RED + "WARNING: TOO SUPPRESSED TO FUNCTION");
 			}
 		}
-		/*
-		lore.add(EnumChatFormatting.YELLOW + "- - -");
-		lore.add(EnumChatFormatting.YELLOW + "DEPRECATED: This item will be removed or changed ");
-		lore.add(EnumChatFormatting.YELLOW + "in future versions and will not work ");
-		lore.add(EnumChatFormatting.YELLOW + "as it does currently if so!");
-		*/
 	}
 
 	@Override
@@ -82,6 +77,9 @@ public class ItemMedication extends Item {
 
 	@Override
 	public void getSubItems(Item item, CreativeTabs tab, List items) {
-		items.addAll(MedicationRecipes.medicationStacks);
+		for (ItemStack stack : MedicationRecipes.medicationStacks) {
+			//System.out.println(stack.getItemDamage());
+			items.add(stack);
+		}
 	}
 }

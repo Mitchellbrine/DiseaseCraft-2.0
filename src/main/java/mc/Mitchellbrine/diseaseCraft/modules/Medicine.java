@@ -1,7 +1,6 @@
 package mc.Mitchellbrine.diseaseCraft.modules;
 
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.registry.GameRegistry;
 import mc.Mitchellbrine.diseaseCraft.api.DCModule;
 import mc.Mitchellbrine.diseaseCraft.api.Module;
 import mc.Mitchellbrine.diseaseCraft.modules.med.item.ItemMedication;
@@ -19,7 +18,7 @@ import org.apache.logging.log4j.Logger;
 /**
  * Created by Mitchellbrine on 2015.
  */
-@DCModule(id = "medication",modid = "DiseaseCraft",version = "1.0",dcVersion = References.VERSION,canBeDisabled = true)
+@DCModule(id = "medication",modid = "DiseaseCraft",dcVersion = References.VERSION,canBeDisabled = true)
 public class Medicine extends Module {
 
 	public static Logger logger = LogManager.getLogger("DC-Medicine");
@@ -36,26 +35,21 @@ public class Medicine extends Module {
 				return medication;
 			}
 		};
-
 		medication = new ItemMedication();
 		MinecraftForge.EVENT_BUS.register(new MedUtils());
 		FMLCommonHandler.instance().bus().register(new MedUtils());
-		GameRegistry.registerItem(medication, "medication");
-
-
-		MedicationRecipes.addMedicationType(new ItemStack(Items.glowstone_dust),"parkinsons","Carbodopa-Levidopa",3);
-		MedicationRecipes.addMedicationType(new ItemStack(Items.redstone),"influenza","Acetaminophen",1);
-		MedicationRecipes.addMedicationType(new ItemStack(Items.gunpowder),"malaria","Chloroquine",4);
-
-		MedicationRecipes.init();
 	}
 
 	@Override
 	public void init() {
+		MedicationRecipes.addMedicationType(new ItemStack(Items.glowstone_dust),"parkinsons","Carbodopa-Levidopa",3);
+		MedicationRecipes.addMedicationType(new ItemStack(Items.redstone),"influenza","Acetaminophen",1);
+		MedicationRecipes.addMedicationType(new ItemStack(Items.gunpowder),"malaria","Chloroquine",4);
 	}
 
 	@Override
 	public void postInit() {
+		MedicationRecipes.init();
 	}
 
 	@Override

@@ -1,11 +1,9 @@
 package mc.Mitchellbrine.diseaseCraft.disease;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import mc.Mitchellbrine.diseaseCraft.DiseaseCraft;
 import mc.Mitchellbrine.diseaseCraft.api.Disease;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.potion.Potion;
-import net.minecraftforge.common.MinecraftForge;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -32,12 +30,8 @@ public class Diseases {
 		addMode(-2, "mc.Mitchellbrine.diseaseCraft.disease.effects.GenericEffects", "dropItem");
 		addMode(-3, "mc.Mitchellbrine.diseaseCraft.disease.effects.GenericEffects", "hydrophobia");
 		addMode(-4, "mc.Mitchellbrine.diseaseCraft.disease.effects.GenericEffects", "death");
-		addMode(-5, "mc.Mitchellbrine.diseaseCraft.disease.effects.GenericEffects", "coughing");
-		addMode(-6, "mc.Mitchellbrine.diseaseCraft.disease.effects.GenericEffects", "sneezing");
-
-		MinecraftForge.EVENT_BUS.register(new BloodTypeHelper());
-		FMLCommonHandler.instance().bus().register(new BloodTypeHelper());
-
+		acceptableModes.add(-5 /* *RESERVED* */);
+		acceptableModes.add(-6 /* *RESERVED* */);
 	}
 
 	@SuppressWarnings("unchecked")
