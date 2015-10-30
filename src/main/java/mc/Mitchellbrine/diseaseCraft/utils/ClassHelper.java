@@ -114,6 +114,7 @@ public class ClassHelper {
 		addLater.clear();
 		removeLater.clear();
 
+		/*
 		List<ModContainer> fmlMods = getPrivateObject(Loader.instance(), "mods");
 		List<ModContainer> newMods = new ArrayList<ModContainer>();
 		newMods.addAll(fmlMods);
@@ -127,7 +128,7 @@ public class ClassHelper {
 			newMods.add(new DummyMod(fakeMeta));
 		}
 		setPrivateObject(Loader.instance(), newMods, "mods");
-
+		*/
 
 		for (DCModule module : modules.values()) {
 			logger.info("Loaded module " + module.id() + " from " + module.modid() + " for DC version " + module.dcVersion());
