@@ -30,6 +30,8 @@ public class ConfigRegistry {
 	public static int diseaseProgression;
 	public static boolean useNativeDiseases;
 	public static int diseasedPlantsChance;
+	public static boolean doDiseasedCrops;
+	public static int diseasedCropsRadius;
 
 	public static boolean useTempCompat;
 	public static String tempTag;
@@ -102,12 +104,15 @@ public class ConfigRegistry {
 		diseaseProgression = config.getInt("diseaseProgression",Configuration.CATEGORY_GENERAL,0,0,1,"Should journals hide diseases until player retrieves them?");
 		useNativeDiseases = config.getBoolean("useNativeJSON",Configuration.CATEGORY_GENERAL,true,"Loads the JSON file located within the jar of the mod");
 		diseasedPlantsChance = config.getInt("diseasedPlantsChance",Configuration.CATEGORY_GENERAL,2,0,100,"The chance that a plant will become diseased (calculated every 2 seconds when within 5x5x5)");
+		doDiseasedCrops = config.getBoolean("doDiseasedCrops",Configuration.CATEGORY_GENERAL,true,"Should diseased crops be calculated on movement? (Increases performance) (Does not remove crops functionality)");
+		diseasedCropsRadius = config.getInt("diseasedCropsRadius","diseasedCrops",5,1,6,"Changes how many blocks are calculated for diseased crops (lower values increase server tick rate)");
 
 		useTempCompat = config.getBoolean("useTempCompat","compat",false,"Use another mod to calculate temperature or to store temperature. This removes cross mod incompatibilities");
 		tempTag = config.getString("temperatureTag","compat","","Sets which temperature tag is used for calculating temperature (for example \"bodyTemp\" from Enviromine");
 		baseTemp = config.getFloat("baseTemperature","compat",1.0f,Float.MIN_VALUE,Float.MAX_VALUE,"Sets which double to multiply by to accurately account for the diseases in-game (for example 37 degrees Celsius is a regular body temperature and could be used");
-
 		config.save();
+
+		System.out.println(useNativeDiseases);
 
 	}
 

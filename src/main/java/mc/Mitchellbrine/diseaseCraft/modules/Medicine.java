@@ -42,26 +42,24 @@ public class Medicine extends Module {
 		FMLCommonHandler.instance().bus().register(new MedUtils());
 		GameRegistry.registerItem(medication, "medication");
 
-
-		MedicationRecipes.addMedicationType(new ItemStack(Items.glowstone_dust),"parkinsons","Carbodopa-Levidopa",3);
-		MedicationRecipes.addMedicationType(new ItemStack(Items.redstone),"influenza","Acetaminophen",1);
-		MedicationRecipes.addMedicationType(new ItemStack(Items.gunpowder), "malaria", "Chloroquine", 4);
-
 		MedUtils.findAllMeds();
 
 	}
 
 	@Override
 	public void init() {
-		MedUtils.readAllMeds();
 	}
 
 	@Override
 	public void postInit() {
-		MedicationRecipes.init();
+		MedicationRecipes.addMedicationType(new ItemStack(Items.glowstone_dust),"parkinsons","Carbodopa-Levidopa",3);
+		MedicationRecipes.addMedicationType(new ItemStack(Items.redstone),"influenza","Acetaminophen",1);
+		MedicationRecipes.addMedicationType(new ItemStack(Items.gunpowder), "malaria", "Chloroquine", 4);
+		MedUtils.readAllMeds();
 	}
 
 	@Override
 	public void serverStart() {
+		MedicationRecipes.init();
 	}
 }

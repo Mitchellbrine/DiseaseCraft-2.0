@@ -6,6 +6,7 @@ package mc.Mitchellbrine.diseaseCraft.utils;
 public class BlockPos {
 
 	public int x, y, z;
+	public boolean isForced = false;
 
 	public BlockPos(int x, int y, int z) {
 		this.x = x;

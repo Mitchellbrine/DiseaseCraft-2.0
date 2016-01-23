@@ -28,4 +28,7 @@ entity.DiseaseCraft.rat.name=Black Rat
 symptom.hydrophobia=Hydrophobia
 symptom.jitter=Jitter
 symptom.dropItem=Slippery Fingers
-symptom.death=
+symptom.death=Death
+
+diseaseCraft.jsonURL=JSON URL
+diseaseCraft.downloadSite=URL Site

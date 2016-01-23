@@ -81,8 +81,13 @@ public class Diseases {
 
 	public static String getDiseaseName(String id) {
 		for (Disease disease : diseases) {
-			if (disease.getId().equalsIgnoreCase(id))
+			//System.out.println("Disease: " + disease.getId());
+			//System.out.println("Expected: " + disease.getId() + " | Received: " + id);
+			if (disease.getId().equalsIgnoreCase(id)) {
 				return disease.getUnlocalizedName();
+			} else {
+				continue;
+			}
 		}
 		return null;
 	}

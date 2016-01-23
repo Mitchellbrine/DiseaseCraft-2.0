@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -102,6 +103,46 @@ public class DiseaseManager {
 		}
 	}
 
+	public static void readStringJSON(String string) {
+
+		try {
+			GsonBuilder builder = new GsonBuilder();
+			builder.registerTypeAdapter(Disease.class, new DiseaseJSON());
+			Gson gson = builder.create();
+
+			Disease[] diseases = gson.fromJson(new StringReader(string), Disease[].class);
+
+			for (Disease disease : diseases) {
+				//disease.addDomain("");
+				DiseaseCraft.logger.info(String.format("Registered the disease \"%s\" via a string",disease.getId()));
+				Diseases.registerDisease(disease);
+			}
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public static void readStringJSON(String string, String siteDomain) {
+
+		try {
+			GsonBuilder builder = new GsonBuilder();
+			builder.registerTypeAdapter(Disease.class, new DiseaseJSON());
+			Gson gson = builder.create();
+
+			Disease[] diseases = gson.fromJson(new StringReader(string), Disease[].class);
+
+			for (Disease disease : diseases) {
+				DiseaseCraft.logger.info(String.format("Registered the disease \"%s\" from the site %s",disease.getId(),siteDomain));
+				disease.addDomain(siteDomain);
+				Diseases.registerDisease(disease);
+			}
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
 	private static void readJSON(InputStream fileName) {
 
 		try {
@@ -112,7 +153,11 @@ public class DiseaseManager {
 			Disease[] diseases = gson.fromJson(new InputStreamReader(fileName), Disease[].class);
 
 			for (Disease disease : diseases) {
-				disease.addDomain(overrideNames.get(overrideStreams.indexOf(fileName)));
+				if (overrideStreams.indexOf(fileName) == -1) {
+					disease.addDomain("DiseaseCraft");
+				} else {
+					disease.addDomain(overrideNames.get(overrideStreams.indexOf(fileName)));
+				}
 				Diseases.registerDisease(disease);
 			}
 
@@ -125,10 +170,11 @@ public class DiseaseManager {
 	public static void findAllDiseases() {
 		if (!diseaseFolder.exists()) {
 			diseaseFolder.mkdirs();
-			if (ConfigRegistry.useNativeDiseases) {
-				nativeFiles.add("diseasecraft.json");
-				nativeFileLoc.add(new ResourceLocation("diseasecraft:diseases/DiseaseCraft.json"));
-			}
+		}
+		if (ConfigRegistry.useNativeDiseases) {
+			nativeFiles.add("diseasecraft.json");
+			nativeFileLoc.add(new ResourceLocation("diseasecraft:diseases/DiseaseCraft.json"));
+			DiseaseCraft.logger.info("Added the native file. Here we go!");
 		}
 		if (diseaseFolder.listFiles() == null) { return; }
 		for (File diseaseJSON : diseaseFolder.listFiles()) {

@@ -19,17 +19,20 @@ import java.util.Map;
 public class MedicationRecipes {
 
 	public static Map<ItemStack, String> diseaseRemoval = new HashMap<ItemStack, String>();
+	public static Map<ItemStack, String> diseaseRemovalTranslated = new HashMap<ItemStack, String>();
 	public static Map<ItemStack, String> medicineType = new HashMap<ItemStack, String>();
 	public static Map<ItemStack, Integer> suppressantValues = new HashMap<ItemStack, Integer>();
 	public static List<ItemStack> medicationStacks = new ArrayList<ItemStack>();
 
 	public static void init() {
 		for (ItemStack stack : diseaseRemoval.keySet()) {
+			//System.out.println(diseaseRemoval.get(stack));
+			//System.out.println(Diseases.getDiseaseName(diseaseRemoval.get(stack)));
 			ItemStack output = new ItemStack(Medicine.medication,1);
 			output.setTagCompound(new NBTTagCompound());
 			output.getTagCompound().setString("medName",medicineType.get(stack));
 			output.getTagCompound().setString("diseaseHeal",diseaseRemoval.get(stack));
-			output.getTagCompound().setString("diseaseHealName", StatCollector.translateToLocal(Diseases.getDiseaseName(diseaseRemoval.get(stack))));
+			output.getTagCompound().setString("diseaseHealName", diseaseRemovalTranslated.get(stack));
 			for (int i = 1; i <= 4;i++) {
 				ItemStack newOutput = output.copy();
 				newOutput.setItemDamage(i);
@@ -77,9 +80,15 @@ public class MedicationRecipes {
 			return;
 		}
 
+		String diseaseName = Diseases.getDiseaseName(curesDisease);
+
+		/*if (!curesDisease.startsWith("disease."))
+			curesDisease = "disease." + curesDisease + ".name";*/
+
 		diseaseRemoval.put(stack,curesDisease);
 		medicineType.put(stack,medicineName);
 		suppressantValues.put(stack,suppresentsRequired);
+		diseaseRemovalTranslated.put(stack,StatCollector.translateToLocal(diseaseName));
 	}
 
 }

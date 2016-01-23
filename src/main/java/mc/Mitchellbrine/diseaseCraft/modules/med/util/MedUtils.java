@@ -38,7 +38,7 @@ public class MedUtils {
 	}
 
 	public static void applyEffect(EntityLivingBase entity, NBTTagCompound nbt) {
-		if (!nbt.hasKey("diseaseHeal")) {
+		if (nbt == null || !nbt.hasKey("diseaseHeal")) {
 			return;
 		}
 

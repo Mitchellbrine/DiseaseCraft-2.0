@@ -4,6 +4,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.relauncher.FMLInjectionData;
+import cpw.mods.fml.relauncher.Side;
 import mc.Mitchellbrine.diseaseCraft.client.gui.GuiHandler;
 import mc.Mitchellbrine.diseaseCraft.config.ConfigRegistry;
 import mc.Mitchellbrine.diseaseCraft.dio.DiseaseDownloader;
@@ -161,5 +162,10 @@ public class DiseaseCraft {
 		FMLCommonHandler.instance().bus().register(new ContractingEvents());
 		MinecraftForge.ORE_GEN_BUS.register(new ContractingEvents());
 		MinecraftForge.TERRAIN_GEN_BUS.register(new ContractingEvents());
+
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+			MinecraftForge.EVENT_BUS.register(new mc.Mitchellbrine.diseaseCraft.client.gui.ClientGuiEvents());
+			FMLCommonHandler.instance().bus().register(new mc.Mitchellbrine.diseaseCraft.client.gui.ClientGuiEvents());
+		}
 	}
 }
