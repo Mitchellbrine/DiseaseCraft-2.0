@@ -5,6 +5,10 @@ buildscript {
             name = "forge"
             url = "http://files.minecraftforge.net/maven"
         }
+		maven { // The repo from which to get waila
+			name "Mobius Repo"
+			url "http://mobiusstrip.eu/maven"
+		}
         maven {
             name = "sonatype"
             url = "https://oss.sonatype.org/content/repositories/snapshots/"
@@ -34,6 +38,7 @@ minecraft {
 }
 
 repositories{
+    mavenCentral()
     maven { // The repo from which to get waila
         name "Mobius Repo"
         url "http://mobiusstrip.eu/maven"
@@ -44,24 +49,26 @@ repositories{
     }
 
 }
-
+ 
 dependencies {
-    compile "codechicken:NotEnoughItems:${project.neiVersion}:dev"
-    // you may put jars on which you depend on in ./libs
-    // or you may define them like so..
-    //compile "some.group:artifact:version:classifier"
-    //compile "some.group:artifact:version"
-      
-    // real examples
-    //compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
-    //compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
-    //compile "mcp.mobius.waila:Waila:1.5.4a_1.7.10:dev"
-
-    // for more info...
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
-
+    compile 'org.apache.commons:commons-math3:3.2'
+    compile 'org.jfree:jcommon:1.0.21'
+    compile 'org.jfree:jfreechart:1.0.17'
+    compile 'com.miglayout:miglayout-swing:4.2'
+    compile 'net.sf.opencsv:opencsv:2.3'
+    compile "mcp.mobius.mobiuscore:MobiusCore:1.2.4:dev"
+    compile "mcp.mobius.opis:Opis:1.2.4:dev"
 }
+ 
+// some crazy stuff to make sure the coremod stuff is in the mods folder...
+// because it wont work otherwise... because FML doesnt load coremods from the classpath
+task copyCoreMods(type: Copy, dependsOn: "extractUserDev") {
+    from configurations.compile
+    include "**/*Mobius*.jar"
+    into file(minecraft.runDir + "/mods")
+}
+tasks.setupDevWorkspace.dependsOn copyCoreMods
+tasks.setupDecompWorkspace.dependsOn copyCoreMods
 
 processResources
 {

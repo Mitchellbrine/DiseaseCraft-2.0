@@ -10,6 +10,7 @@ import mc.Mitchellbrine.diseaseCraft.api.Disease;
 import mc.Mitchellbrine.diseaseCraft.api.DiseaseEvent;
 import mc.Mitchellbrine.diseaseCraft.disease.Diseases;
 import mc.Mitchellbrine.diseaseCraft.json.DiseaseJSON;
+import mc.Mitchellbrine.diseaseCraft.json.DiseaseManager;
 import mc.Mitchellbrine.diseaseCraft.modules.med.recipe.MedicationRecipes;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -68,18 +69,19 @@ public class MedUtils {
 
 	@SubscribeEvent
 	public void medTimedown(LivingEvent.LivingUpdateEvent event) {
-		for (String diseaseId : MedicationRecipes.diseaseRemoval.values()) {
-			if (areMedsActive(event.entityLiving,diseaseId)) {
-				int newMeds = event.entityLiving.getEntityData().getInteger("block"+diseaseId) - 1;
-				event.entityLiving.getEntityData().setInteger("block"+diseaseId,newMeds);
-				if (newMeds > 24000) {
-					event.entityLiving.attackEntityFrom(medication,1.0F);
+		if (!event.entityLiving.worldObj.isRemote)
+			for (String diseaseId : MedicationRecipes.diseaseRemoval.values()) {
+				if (areMedsActive(event.entityLiving,diseaseId)) {
+					int newMeds = event.entityLiving.getEntityData().getInteger("block"+diseaseId) - 1;
+					event.entityLiving.getEntityData().setInteger("block"+diseaseId,newMeds);
+					if (newMeds > 24000) {
+						event.entityLiving.attackEntityFrom(medication,1.0F);
+					}
 				}
 			}
-		}
 	}
 
-
+	// HI WORLD, I EXIST! WAIT UNTIL DC 3.0 though... then, it will get REAL!
 	public void painKiller(LivingAttackEvent event) {
 		if (event.entityLiving instanceof EntityPlayer) {
 			System.out.println("Hurt event called!");
@@ -93,7 +95,7 @@ public class MedUtils {
 	}
 
 	public static void findAllMeds() {
-		File folder = new File((FMLInjectionData.data()[6]) + File.separator + "DiseaseCraft" + File.separator + "Medication");
+		File folder = new File(DiseaseManager.diseaseFolder, "Medication");
 		medConfigs = new ArrayList<String>();
 		if (!folder.exists()) {
 			folder.mkdirs();

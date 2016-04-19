@@ -24,6 +24,11 @@ public class DiseaseEvent extends LivingEvent {
 		}
 	}
 
+	public static class DiseaseTickEvent extends DiseaseEvent {
+
+		public DiseaseTickEvent(Disease disease, EntityLivingBase entity) { super(disease, entity); }
+	}
+
 	public static class DiseaseEndEvent extends DiseaseEvent {
 
 		public DiseaseEndEvent(Disease disease, EntityLivingBase entity) {

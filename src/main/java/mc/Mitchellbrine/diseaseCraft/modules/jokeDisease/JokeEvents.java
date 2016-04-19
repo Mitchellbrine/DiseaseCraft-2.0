@@ -1,16 +1,14 @@
 package mc.Mitchellbrine.diseaseCraft.modules.jokeDisease;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import mc.Mitchellbrine.diseaseCraft.api.DiseaseEvent;
 import mc.Mitchellbrine.diseaseCraft.disease.DiseaseHelper;
 import mc.Mitchellbrine.diseaseCraft.disease.effects.GenericEffects;
 import mc.Mitchellbrine.diseaseCraft.modules.ModuleJoke;
 import net.minecraft.block.material.Material;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 /**
  * Created by Mitchellbrine on 2015.
@@ -18,8 +16,8 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 public class JokeEvents {
 
 	@SubscribeEvent
-	public void livingUpdate(LivingEvent.LivingUpdateEvent event) {
-		if (DiseaseHelper.diseaseExists("shrekRabies") && DiseaseHelper.isDiseaseActive(event.entityLiving,DiseaseHelper.getDiseaseInstance("shrekRabies"))) {
+	public void livingUpdate(DiseaseEvent.DiseaseTickEvent event) {
+		if (DiseaseHelper.diseaseExists("shrekRabies") && event.disease == DiseaseHelper.getDiseaseInstance("shrekRabies")) {
 			int posX = MathHelper.floor_double(event.entityLiving.posX);
 			int posY = MathHelper.floor_double(event.entityLiving.posY);
 			int posZ = MathHelper.floor_double(event.entityLiving.posZ);

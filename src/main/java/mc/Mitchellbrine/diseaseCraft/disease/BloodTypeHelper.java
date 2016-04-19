@@ -91,7 +91,7 @@ public class BloodTypeHelper {
 					rhesus = "-";
 				}
 				player.getEntityData().getCompoundTag(player.PERSISTED_NBT_TAG).setString("bloodType", bloodLetter + rhesus);
-				System.out.println(player.getCommandSenderName() + " | Blood Type: " + player.getEntityData().getCompoundTag(player.PERSISTED_NBT_TAG).getString("bloodType"));
+				//System.out.println(player.getCommandSenderName() + " | Blood Type: " + player.getEntityData().getCompoundTag(player.PERSISTED_NBT_TAG).getString("bloodType"));
 				if (bloodTypes == null) {
 					bloodTypes = new HashMap<String, String>();
 				}
@@ -108,7 +108,7 @@ public class BloodTypeHelper {
 					bloodTypes = new HashMap<String, String>();
 					bloodTypes.put(player.getCommandSenderName(),player.getEntityData().getCompoundTag(player.PERSISTED_NBT_TAG).getString("bloodType"));
 				}
-				System.out.println(bloodTypes.get(player.getCommandSenderName()));
+				//System.out.println(bloodTypes.get(player.getCommandSenderName()));
 			}
 		}
 	}

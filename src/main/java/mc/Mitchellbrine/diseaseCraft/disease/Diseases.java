@@ -1,10 +1,15 @@
 package mc.Mitchellbrine.diseaseCraft.disease;
 
+import com.google.gson.JsonPrimitive;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import mc.Mitchellbrine.diseaseCraft.DiseaseCraft;
 import mc.Mitchellbrine.diseaseCraft.api.Disease;
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.potion.Potion;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.lang.reflect.Method;
@@ -23,11 +28,25 @@ public class Diseases {
 	public static Map<Integer,Method> modesAndMethods;
 	public static Map<Method,String> modesAndNames;
 
+	private static List<String> types;
+
+	public static Map<String, List<Disease>> diseaseTypes;
+
+	public static Map<World, List<EntityLivingBase>> diseasedEntities;
+
+	public static List<Class<? extends EntityLivingBase>> entityClasses;
+	public static List<Class<? extends EntityLivingBase>> mobClasses;
+	public static List<Class<? extends EntityLivingBase>> mobAttackClasses;
+
 	static {
 		diseases = new ArrayList<Disease>();
 		acceptableModes = new ArrayList<Integer>();
 		modesAndMethods = new HashMap<Integer, Method>();
 		modesAndNames = new HashMap<Method, String>();
+		types = new ArrayList<String>();
+		diseaseTypes = new HashMap<String, List<Disease>>();
+		diseasedEntities = new HashMap<World, List<EntityLivingBase>>();
+		entityClasses = new ArrayList<Class<? extends EntityLivingBase>>();
 		addMode(-1, "mc.Mitchellbrine.diseaseCraft.disease.effects.GenericEffects", "jitter");
 		addMode(-2, "mc.Mitchellbrine.diseaseCraft.disease.effects.GenericEffects", "dropItem");
 		addMode(-3, "mc.Mitchellbrine.diseaseCraft.disease.effects.GenericEffects", "hydrophobia");
@@ -35,6 +54,13 @@ public class Diseases {
 		addMode(-5, "mc.Mitchellbrine.diseaseCraft.disease.effects.GenericEffects", "coughing");
 		addMode(-6, "mc.Mitchellbrine.diseaseCraft.disease.effects.GenericEffects", "sneezing");
 		addMode(-7, "mc.Mitchellbrine.diseaseCraft.disease.effects.GenericEffects", "brainReanimation");
+
+		types.add("eaten");
+		types.add("block-contact");
+		types.add("temp");
+		types.add("mob");
+		types.add("mobAttack");
+		types.add("crops");
 
 		MinecraftForge.EVENT_BUS.register(new BloodTypeHelper());
 		FMLCommonHandler.instance().bus().register(new BloodTypeHelper());
@@ -55,6 +81,45 @@ public class Diseases {
 			disease.effects = correctEffects;
 
 			diseases.add(disease);
+
+			for (String type : types) {
+				if (disease.getParameters(type) != null) {
+					List<Disease> diseases1;
+					if (diseaseTypes.containsKey(type)) {
+						diseases1 = diseaseTypes.get(type);
+					} else {
+						diseases1 = new ArrayList<Disease>();
+					}
+					if (!diseases1.contains(disease)) {
+						diseases1.add(disease);
+					}
+					diseaseTypes.put(type,diseases1);
+					DiseaseCraft.logger.info("Registered " + disease.getId() + " to the type " + type);
+					if (type.equalsIgnoreCase("mob") || type.equalsIgnoreCase("mobAttack")) {
+						if (type.equalsIgnoreCase("mobAttack")) {
+							for (int i = 1; i < disease.getParameters(type).length;i++) {
+								if (EntityList.classToStringMapping.containsValue(disease.getParameters(type)[i])) {
+									Class<? extends EntityLivingBase> clazz = (Class<? extends EntityLivingBase>)EntityList.stringToClassMapping.get(((JsonPrimitive)disease.getParameters(type)[i]).getAsString());
+									if (!entityClasses.contains(clazz))
+										entityClasses.add(clazz);
+									if (!mobAttackClasses.contains(clazz))
+										mobAttackClasses.add(clazz);
+								}
+							}
+						} else {
+							for (int i = 2; i < disease.getParameters(type).length;i++) {
+								if (EntityList.classToStringMapping.containsValue(disease.getParameters(type)[i])) {
+									Class<? extends EntityLivingBase> clazz = (Class<? extends EntityLivingBase>)EntityList.stringToClassMapping.get(((JsonPrimitive)disease.getParameters(type)[i]).getAsString());
+									if (!entityClasses.contains(clazz))
+										entityClasses.add(clazz);
+									if (!mobClasses.contains(clazz))
+										mobClasses.add(clazz);
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 

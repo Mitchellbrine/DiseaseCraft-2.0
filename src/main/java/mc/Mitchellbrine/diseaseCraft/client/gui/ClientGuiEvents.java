@@ -13,9 +13,9 @@ public class ClientGuiEvents {
 
 	@SubscribeEvent
 	public void menuOpen(GuiScreenEvent.InitGuiEvent.Post event) {
-		/*if (event.gui instanceof GuiMainMenu) {
-			event.buttonList.add(new GuiButton(101,event.gui.width - 21,0,20,20,"DC"));
-		}*/
+		if (event.gui instanceof GuiMainMenu) {
+			event.buttonList.add(new GuiButton(101,event.gui.width - 20,0,20,20,"DC"));
+		}//*/
 	}
 
 	@SubscribeEvent

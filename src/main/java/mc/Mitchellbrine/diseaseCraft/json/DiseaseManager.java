@@ -7,12 +7,14 @@ import cpw.mods.fml.relauncher.Side;
 import mc.Mitchellbrine.diseaseCraft.DiseaseCraft;
 import mc.Mitchellbrine.diseaseCraft.api.Disease;
 import mc.Mitchellbrine.diseaseCraft.config.ConfigRegistry;
+import mc.Mitchellbrine.diseaseCraft.dio.JSONDownloaderManager;
 import mc.Mitchellbrine.diseaseCraft.disease.Diseases;
 import cpw.mods.fml.relauncher.FMLInjectionData;
 import net.minecraft.util.ResourceLocation;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
@@ -33,7 +35,7 @@ public class DiseaseManager {
 	private static List<String> overrideNames = new ArrayList<String>();
 	private static List<InputStream> overrideStreams = new ArrayList<InputStream>();
 
-	private static File diseaseFolder = new File((File) FMLInjectionData.data()[6],"DiseaseCraft/");
+	public static File diseaseFolder = new File((File) FMLInjectionData.data()[6],"DiseaseCraft" + File.separator);
 
 	private static DiseaseManager INST;
 
@@ -51,7 +53,7 @@ public class DiseaseManager {
 						readJSON(net.minecraft.client.Minecraft.getMinecraft().getResourceManager().getResource(nativeFile).getInputStream());
 					} else {
 						readJSON(instance().getClass().getClassLoader()
-							.getResourceAsStream("assets/" + nativeFile.getResourceDomain() + "/" + nativeFile.getResourcePath()));
+							.getResourceAsStream("assets" + File.separator + nativeFile.getResourceDomain() + File.separator + nativeFile.getResourcePath()));
 					}
 				} catch (Exception ex) {
 					ex.printStackTrace();
@@ -123,7 +125,7 @@ public class DiseaseManager {
 		}
 	}
 
-	public static void readStringJSON(String string, String siteDomain) {
+	public static void readStringJSON(String string, String siteDomain, String URL) {
 
 		try {
 			GsonBuilder builder = new GsonBuilder();
@@ -134,7 +136,8 @@ public class DiseaseManager {
 
 			for (Disease disease : diseases) {
 				DiseaseCraft.logger.info(String.format("Registered the disease \"%s\" from the site %s",disease.getId(),siteDomain));
-				disease.addDomain(siteDomain);
+				disease.addDomain(URL.lastIndexOf('/') > -1 ? URL.substring(URL.lastIndexOf('/')) : URL);
+				System.out.println(disease.getUnlocalizedName());
 				Diseases.registerDisease(disease);
 			}
 
@@ -192,6 +195,12 @@ public class DiseaseManager {
 					files.add(diseaseJSON.getPath());
 					DiseaseCraft.logger.info("Overrode a disease json file with " + diseaseJSON.getName());
 				}
+			} else if (diseaseJSON != null && !diseaseJSON.isDirectory() && diseaseJSON.getName().equalsIgnoreCase("DownloadedJSONs.cfg")) {
+				try {
+					JSONDownloaderManager.compileList();
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
 			}
 		}
 	}
@@ -201,8 +210,8 @@ public class DiseaseManager {
 			if (fileName.substring(fileName.lastIndexOf(File.separatorChar) + 1).equalsIgnoreCase(name))
 				return true;
 			else {
-				System.out.println("Separator Char: " + File.separatorChar + " | Path Separator Char: " + File.pathSeparatorChar);
-				System.err.println(fileName.substring(fileName.lastIndexOf(File.separatorChar) + 1));
+				//System.out.println("Separator Char: " + File.separatorChar + " | Path Separator Char: " + File.pathSeparatorChar);
+				//System.err.println(fileName.substring(fileName.lastIndexOf(File.separatorChar) + 1));
 			}
 		}
 		for (String nativeFile : nativeFiles) {
@@ -250,8 +259,8 @@ public class DiseaseManager {
 		for (String fileName : overrideNames) {
 			if (fileName.equalsIgnoreCase(name))
 				return true;
-			else
-				System.out.println(fileName + " | " + name);
+			/*else
+				System.out.println(fileName + " | " + name);*/
 		}
 		return false;
 	}

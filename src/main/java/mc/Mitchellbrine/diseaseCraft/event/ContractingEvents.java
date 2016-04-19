@@ -1,21 +1,14 @@
 package mc.Mitchellbrine.diseaseCraft.event;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonPrimitive;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonWriter;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.registry.GameData;
-import cpw.mods.fml.common.registry.GameRegistry;
 import mc.Mitchellbrine.diseaseCraft.api.Disease;
 import mc.Mitchellbrine.diseaseCraft.api.DiseaseEvent;
-import mc.Mitchellbrine.diseaseCraft.config.ConfigRegistry;
 import mc.Mitchellbrine.diseaseCraft.disease.DiseaseHelper;
 import mc.Mitchellbrine.diseaseCraft.disease.Diseases;
 import mc.Mitchellbrine.diseaseCraft.disease.effects.GenericEffects;
-import mc.Mitchellbrine.diseaseCraft.json.positions.PositionJSON;
 import mc.Mitchellbrine.diseaseCraft.network.NBTPacket;
 import mc.Mitchellbrine.diseaseCraft.network.PacketHandler;
 import mc.Mitchellbrine.diseaseCraft.utils.BlockPos;
@@ -29,25 +22,15 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
 import net.minecraftforge.event.world.WorldEvent;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,155 +40,207 @@ import java.util.Map;
  */
 public class ContractingEvents {
 
+	private int second = 0;
+
 	public static Map<World,List<BlockPos>> diseasedCrops;
 
 	static {
 		diseasedCrops = new HashMap<World, List<BlockPos>>();
 	}
 
+
 	@SubscribeEvent
 	public void attackEvent(LivingAttackEvent event) {
 		if (!event.entityLiving.worldObj.isRemote) {
-			for (Disease disease : Diseases.diseases) {
-					if (event.source != null && event.source.getEntity() != null && EntityList.classToStringMapping != null && disease.getWaysToContract() != null && EntityList.getEntityString(event.source.getEntity()) != null && disease.getParameters("mobAttack") != null && disease.getWaysToContract().contains("mobAttack")) {
-						for (int i = 1; i < disease.getParameters("mobAttack").length;i++) {
-							if (((JsonPrimitive) disease.getParameters("mobAttack")[i]).getAsString().replaceAll("\"", "").equalsIgnoreCase(EntityList.getEntityString(event.source.getEntity()))) {
-								GenericEffects.rand.setSeed(event.entityLiving.worldObj.getTotalWorldTime());
-								if (GenericEffects.rand.nextInt(1000000) >= ((JsonPrimitive) disease.getParameters("mobAttack")[0]).getAsInt()) {
-									DiseaseHelper.addDisease(event.entityLiving, disease);
-								}
-							}
-						}
-					}
-			}
-		}
-	}
+			if (Diseases.diseaseTypes.containsKey("mobAttack")) {
+				for (Disease disease : Diseases.diseaseTypes.get("mobAttack")) {
+					if (disease.getParameters("mobAttack") == null || !disease.getWaysToContract().contains("mobAttack"))
+						continue;
 
-	@SuppressWarnings("unchecked")
-	@SubscribeEvent
-	public void mobAroundEvent(LivingEvent.LivingUpdateEvent event) {
-		if (!event.entityLiving.worldObj.isRemote) {
-			if (event.entityLiving.worldObj.getTotalWorldTime() % 20 == 0) {
-				for (Disease disease : Diseases.diseases) {
-					if (EntityList.classToStringMapping != null && disease.getWaysToContract() != null && disease.getParameters("mob") != null && disease.getWaysToContract().contains("mob")) {
-						int distance = ((JsonPrimitive) disease.getParameters("mob")[0]).getAsInt();
-						for (Entity entity : (List<Entity>) event.entityLiving.worldObj.loadedEntityList) {
-							if (entity instanceof EntityPlayer) {
-								continue;
-							}
-							for (int i = 2; i < disease.getParameters("mob").length; i++) {
-								if (i > disease.getParameters("mob").length || disease.getParameters("mob")[i] == null || ((JsonPrimitive) disease.getParameters("mob")[i]).getAsString() == null || !EntityList.classToStringMapping.entrySet().contains(((JsonPrimitive) disease.getParameters("mob")[i]).getAsString()))
-									continue;
-								System.out.println(disease.getUnlocalizedName());
-								System.out.println(i);
-								if (entity != null && EntityList.getEntityString(entity) != null && EntityList.getEntityString(entity).equalsIgnoreCase(((JsonPrimitive) disease.getParameters("mob")[i]).getAsString()) && entity.getDistanceToEntity(event.entityLiving) <= distance && GenericEffects.rand.nextInt(1000000) >= ((JsonPrimitive) disease.getParameters("mob")[1]).getAsInt()) {
-									DiseaseHelper.addDisease(event.entityLiving, disease);
-								}
-							}
+
+					if (event.source != null && event.source.getEntity() != null && Diseases.entityClasses.contains(event.source.getEntity().getClass()) && Diseases.mobAttackClasses.contains(event.source.getEntity().getClass())) {
+
+						int chance;
+
+						if (((JsonPrimitive) disease.getParameters("mobAttack")[0]).isNumber()) {
+							chance = ((JsonPrimitive)disease.getParameters("mobAttack")[0]).getAsInt();
+						} else {
+							chance = ((JsonPrimitive)disease.getParameters("mobAttack")[1]).getAsInt();
+
+						}
+
+						GenericEffects.rand.setSeed(event.entityLiving.worldObj.getTotalWorldTime());
+						if (GenericEffects.rand.nextInt(1000000) >= chance) {
+							DiseaseHelper.addDisease(event.entityLiving, disease);
 						}
 					}
 				}
 			}
 		}
 	}
+
+
+
+	@SuppressWarnings("unchecked")
+	@SubscribeEvent
+	public void mobAroundEvent(LivingEvent.LivingUpdateEvent event) {
+		if (!event.entityLiving.worldObj.isRemote && Diseases.entityClasses.contains(event.entityLiving.getClass()) && Diseases.mobClasses.contains(event.entityLiving.getClass())) {
+			if (event.entityLiving.worldObj.getTotalWorldTime() % 22 == 0) {
+				if (Diseases.diseaseTypes.containsKey("mob")) {
+					for (Disease disease : Diseases.diseaseTypes.get("mob")) {
+							int distance;
+							AxisAlignedBB aabb;
+							int chance;
+
+
+							if (((JsonPrimitive) disease.getParameters("mob")[0]).isString()) {
+								distance = ((JsonPrimitive) disease.getParameters("mob")[1]).getAsInt();
+
+								aabb = AxisAlignedBB.getBoundingBox(event.entityLiving.posX - distance, event.entityLiving.posY - distance, event.entityLiving.posZ - distance, event.entityLiving.posX + distance, event.entityLiving.posY + distance, event.entityLiving.posZ + distance);
+								chance = ((JsonPrimitive)disease.getParameters("mob")[2]).getAsInt();
+
+									/**if (entity instanceof EntityPlayer) {
+										continue;
+									}
+									if (((JsonPrimitive) disease.getParameters("mob")[0]).getAsString() == null || !EntityList.classToStringMapping.entrySet().contains(((JsonPrimitive) disease.getParameters("mob")[0]).getAsString()))
+										continue;
+									//System.out.println(disease.getUnlocalizedName());
+									//System.out.println(i);
+									if (EntityList.getEntityString(event.entityLiving) != null && EntityList.getEntityString(entity).equalsIgnoreCase(((JsonPrimitive) disease.getParameters("mob")[0]).getAsString()) && /**entity.getDistanceToEntity(event.entityLiving) <= distance && GenericEffects.rand.nextInt(1000000) >= ((JsonPrimitive) disease.getParameters("mob")[2]).getAsInt()) {
+										DiseaseHelper.addDisease(event.entityLiving, disease);
+									}*/
+
+							} else {
+								distance = ((JsonPrimitive) disease.getParameters("mob")[0]).getAsInt();
+								aabb = AxisAlignedBB.getBoundingBox(event.entityLiving.posX - distance, event.entityLiving.posY - distance, event.entityLiving.posZ - distance, event.entityLiving.posX + distance, event.entityLiving.posY + distance, event.entityLiving.posZ + distance);
+								chance = ((JsonPrimitive)disease.getParameters("mob")[1]).getAsInt();
+							}
+
+
+						for (Entity entity : (List<Entity>)event.entityLiving.worldObj.getEntitiesWithinAABBExcludingEntity(event.entityLiving,aabb)) {
+							if (entity instanceof EntityLivingBase) {
+								if (GenericEffects.rand.nextInt(1000000) >= chance) {
+									DiseaseHelper.addDisease((EntityLivingBase)entity,disease);
+								}
+							}
+						}
+							//}
+						}
+					}
+				}
+			}
+		}
 
 	@SuppressWarnings("static-access")
 	@SubscribeEvent
 	public void biomeContraction(LivingEvent.LivingUpdateEvent event) {
 		if (!event.entityLiving.worldObj.isRemote) {
 			if (event.entityLiving.worldObj.getTotalWorldTime() % 20 == 0) {
-				for (Disease disease : Diseases.diseases) {
-					if (disease.getWaysToContract() != null && disease.getParameters("temp") != null && disease.getWaysToContract().contains("temp")) {
-						float temperature = ((JsonPrimitive) disease.getParameters("temp")[0]).getAsFloat();
-						int randomNumber = ((JsonPrimitive) disease.getParameters("temp")[1]).getAsInt();
-						boolean warmDetection = ((JsonPrimitive) disease.getParameters("temp")[2]).getAsBoolean();
-						float temp = event.entityLiving.worldObj.getBiomeGenForCoordsBody(MathHelper.floor_double(event.entityLiving.posX), MathHelper.floor_double(event.entityLiving.posZ)).getFloatTemperature(MathHelper.floor_double(event.entityLiving.posX), MathHelper.floor_double(event.entityLiving.posY), MathHelper.floor_double(event.entityLiving.posZ));
-
-						if (ConfigRegistry.useTempCompat) {
-							temp = event.entityLiving.getEntityData().getFloat(ConfigRegistry.tempTag);
-							temperature *= ConfigRegistry.baseTemp;
-						}
-
-						if (((warmDetection && temp >= temperature) || (!warmDetection && temp <= temperature)) && GenericEffects.rand.nextInt(1000000) >= randomNumber) {
-							DiseaseHelper.addDisease(event.entityLiving, disease);
-						}
-					}
-
-					// Stat Contraction
-
-					if (disease.getWaysToContract() != null && disease.getParameters("stat") != null && disease.getWaysToContract().contains("stat")) {
-						String statName = ((JsonPrimitive) disease.getParameters("stat")[0]).getAsString();
-						int statValue = ((JsonPrimitive) disease.getParameters("stat")[1]).getAsInt();
-						boolean useBooleanFlag = ((JsonPrimitive) disease.getParameters("stat")[2]).getAsBoolean();
-						int randomNumber = ((JsonPrimitive) disease.getParameters("stat")[3]).getAsInt();
-						if (event.entityLiving instanceof EntityPlayerMP) {
-							EntityPlayerMP player = (EntityPlayerMP) event.entityLiving;
-							if (player.func_147099_x().writeStat(StatHelper.getStatBaseFromName(statName)) >= statValue) {
-								if (GenericEffects.rand.nextInt(1000000) > randomNumber) {
-									if (useBooleanFlag) {
-										if (!player.getEntityData().hasKey(player.PERSISTED_NBT_TAG, 10) || !player.getEntityData().getCompoundTag(player.PERSISTED_NBT_TAG).getBoolean("has" + disease.getId())) {
-											if (!player.getEntityData().hasKey(player.PERSISTED_NBT_TAG, 10)) {
-												player.getEntityData().setTag(player.PERSISTED_NBT_TAG, new NBTTagCompound());
+				switch (second) {
+					case 1:
+						if (Diseases.diseaseTypes.containsKey("stat")) {
+							for (Disease disease : Diseases.diseaseTypes.get("stat")) {
+								String statName = ((JsonPrimitive) disease.getParameters("stat")[0]).getAsString();
+								int statValue = ((JsonPrimitive) disease.getParameters("stat")[1]).getAsInt();
+								boolean useBooleanFlag = ((JsonPrimitive) disease.getParameters("stat")[2]).getAsBoolean();
+								int randomNumber = ((JsonPrimitive) disease.getParameters("stat")[3]).getAsInt();
+								if (event.entityLiving instanceof EntityPlayerMP) {
+									EntityPlayerMP player = (EntityPlayerMP) event.entityLiving;
+									if (player.func_147099_x().writeStat(StatHelper.getStatBaseFromName(statName)) >= statValue) {
+										if (GenericEffects.rand.nextInt(1000000) > randomNumber) {
+											if (useBooleanFlag) {
+												if (!player.getEntityData().hasKey(player.PERSISTED_NBT_TAG, 10) || !player.getEntityData().getCompoundTag(player.PERSISTED_NBT_TAG).getBoolean("has" + disease.getId())) {
+													if (!player.getEntityData().hasKey(player.PERSISTED_NBT_TAG, 10)) {
+														player.getEntityData().setTag(player.PERSISTED_NBT_TAG, new NBTTagCompound());
+													}
+													player.getEntityData().getCompoundTag(player.PERSISTED_NBT_TAG).setBoolean("has" + disease.getId(), true);
+												}
 											}
-											player.getEntityData().getCompoundTag(player.PERSISTED_NBT_TAG).setBoolean("has" + disease.getId(), true);
-										}
-									}
 
-									DiseaseHelper.addDisease(event.entityLiving, disease);
-								}
-							}
-						}
-					}
-
-					if (event.entityLiving.worldObj.getTotalWorldTime() % 60 == 0) {
-						if (disease.getWaysToContract() != null && disease.getParameters("block-contact") != null && disease.getWaysToContract().contains("block-contact")) {
-							int radius = ((JsonPrimitive) disease.getParameters("block-contact")[0]).getAsInt();
-							int randomNumber = ((JsonPrimitive) disease.getParameters("block-contact")[1]).getAsInt();
-							String[] blocks = StringUtils.getStringsFromPrimitives((JsonPrimitive[]) StringUtils.cutArray(disease.getParameters("block-contact"), 2));
-							for (int xx = event.entityLiving.serverPosX - radius; xx <= event.entityLiving.serverPosX + radius; xx++) {
-								for (int yy = event.entityLiving.serverPosY - radius; yy <= event.entityLiving.serverPosY + radius; yy++) {
-									for (int zz = event.entityLiving.serverPosZ - radius; zz <= event.entityLiving.serverPosZ + radius; zz++) {
-										if (StringUtils.arrayContainsLoose(blocks, event.entityLiving.worldObj.getBlock(xx, yy, zz).getUnlocalizedName()) && event.entityLiving.worldObj.rand.nextInt(1000000) > randomNumber) {
 											DiseaseHelper.addDisease(event.entityLiving, disease);
 										}
 									}
 								}
 							}
 						}
-					}
+						break;
+					case 2:
+						if (Diseases.diseaseTypes.containsKey("block-contact")) {
+							for (Disease disease : Diseases.diseaseTypes.get("block-contact")) {
+								int radius = ((JsonPrimitive) disease.getParameters("block-contact")[0]).getAsInt();
+								int randomNumber = ((JsonPrimitive) disease.getParameters("block-contact")[1]).getAsInt();
+								String[] blocks = StringUtils.getStringsFromPrimitives((JsonPrimitive[]) StringUtils.cutArray(disease.getParameters("block-contact"), 2));
+								for (int xx = event.entityLiving.serverPosX - radius; xx <= event.entityLiving.serverPosX + radius; xx++) {
+									for (int yy = event.entityLiving.serverPosY - radius; yy <= event.entityLiving.serverPosY + radius; yy++) {
+										for (int zz = event.entityLiving.serverPosZ - radius; zz <= event.entityLiving.serverPosZ + radius; zz++) {
+											if (StringUtils.arrayContainsLoose(blocks, event.entityLiving.worldObj.getBlock(xx, yy, zz).getUnlocalizedName()) && event.entityLiving.worldObj.rand.nextInt(1000000) > randomNumber) {
+												DiseaseHelper.addDisease(event.entityLiving, disease);
+											}
+										}
+									}
+								}
+							}
+						}
+						break;
+					default:
+						/*if (Diseases.diseaseTypes.containsKey("temp")) {
+							for (Disease disease : Diseases.diseaseTypes.get("temp")) {
+								float temperature = ((JsonPrimitive) disease.getParameters("temp")[0]).getAsFloat();
+								int randomNumber = ((JsonPrimitive) disease.getParameters("temp")[1]).getAsInt();
+								boolean warmDetection = ((JsonPrimitive) disease.getParameters("temp")[2]).getAsBoolean();
+								float temp = event.entityLiving.worldObj.getBiomeGenForCoordsBody(MathHelper.floor_double(event.entityLiving.posX), MathHelper.floor_double(event.entityLiving.posZ)).getFloatTemperature(MathHelper.floor_double(event.entityLiving.posX), MathHelper.floor_double(event.entityLiving.posY), MathHelper.floor_double(event.entityLiving.posZ));
 
+								if (ConfigRegistry.useTempCompat) {
+									temp = event.entityLiving.getEntityData().getFloat(ConfigRegistry.tempTag);
+									temperature *= ConfigRegistry.baseTemp;
+								}
+
+								if (((warmDetection && temp >= temperature) || (!warmDetection && temp <= temperature)) && GenericEffects.rand.nextInt(1000000) >= randomNumber) {
+									DiseaseHelper.addDisease(event.entityLiving, disease);
+								}
+							}
+						}*/
+						break;
 				}
-
-			}
-		}
-	}
-
-	@SubscribeEvent
-	public void livingUpdate(LivingEvent.LivingUpdateEvent event) {
-		for (Disease disease : Diseases.diseases) {
-			if (DiseaseHelper.isDiseaseActive(event.entityLiving,disease)) {
-				if (event.entityLiving.getEntityData().hasKey(disease.getUnlocalizedName().replaceAll(".name","")) && event.entityLiving.getEntityData().getInteger(disease.getUnlocalizedName().replaceAll(".name","")) == 1 && !event.entityLiving.isDead) {
-					MinecraftForge.EVENT_BUS.post(new DiseaseEvent.DiseaseEndEvent(disease,event.entityLiving));
+				if (second < 2) {
+					second++;
+				} else {
+					second = 0;
 				}
-				GenericEffects.applyEffects(event.entityLiving,disease);
-				int newDiseaseTimer = event.entityLiving.getEntityData().getInteger(disease.getUnlocalizedName().replaceAll(".name","")) - 1;
-				event.entityLiving.getEntityData().setInteger(disease.getUnlocalizedName().replaceAll(".name",""),newDiseaseTimer);
 			}
-		}
-		if (event.entityLiving.worldObj.getTotalWorldTime() % 60 == 0) {
-			if (!event.entityLiving.worldObj.isRemote) {
+
+			if (event.entityLiving.worldObj.getTotalWorldTime() % 60 == 0) {
 				if (event.entityLiving instanceof EntityPlayer) {
 					EntityPlayerMP player = (EntityPlayerMP) event.entityLiving;
 					PacketHandler.INSTANCE.sendTo(new NBTPacket(player.PERSISTED_NBT_TAG, player.getEntityData().getCompoundTag(player.PERSISTED_NBT_TAG)), player);
 				}
 			}
 		}
-		/*
-		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
-			if (DiseaseHelper.isDiseaseActive(event.entityLiving, DiseaseHelper.getDiseaseInstance("brainReanimation"))) {
-				net.minecraft.client.Minecraft.getMinecraft().thePlayer.movementInput =
+	}
+
+	@SubscribeEvent
+	public void livingUpdate(TickEvent.WorldTickEvent event) {
+		if (!event.world.isRemote) {
+			if (Diseases.diseasedEntities.containsKey(event.world)) {
+				for (EntityLivingBase entity : Diseases.diseasedEntities.get(event.world)) {
+					for (Disease disease : Diseases.diseases) {
+						if (DiseaseHelper.isDiseaseActive(entity, disease)) {
+							MinecraftForge.EVENT_BUS.register(new DiseaseEvent.DiseaseTickEvent(disease, entity));
+						}
+					}
+				}
 			}
-		} */
+		}
+	}
+
+	@SubscribeEvent
+	public void diseaseTick(DiseaseEvent.DiseaseTickEvent event) {
+		GenericEffects.applyEffects(event.entityLiving,event.disease);
+		int newDiseaseTimer = event.entityLiving.getEntityData().getInteger(event.disease.getUnlocalizedName().replaceAll(".name","")) - 1;
+		event.entityLiving.getEntityData().setInteger(event.disease.getUnlocalizedName().replaceAll(".name",""),newDiseaseTimer);
+		if (event.entityLiving.getEntityData().hasKey(event.disease.getUnlocalizedName().replaceAll(".name","")) && event.entityLiving.getEntityData().getInteger(event.disease.getUnlocalizedName().replaceAll(".name","")) == 1 && !event.entityLiving.isDead) {
+			MinecraftForge.EVENT_BUS.post(new DiseaseEvent.DiseaseEndEvent(event.disease,event.entityLiving));
+		}
 	}
 
 	@SubscribeEvent
@@ -228,20 +263,18 @@ public class ContractingEvents {
 	public void onEaten(PlayerUseItemEvent.Finish event) {
 		if (!event.entityPlayer.worldObj.isRemote) {
 			if (event.item != null) {
-				for (Disease disease : Diseases.diseases) {
-					if (disease.getWaysToContract() != null && disease.getWaysToContract().contains("eaten")) {
-						if (disease.getParameters("eaten") != null) {
-							//event.item.getItem() == Item.getItemById(itemID) &&
-							int itemID = -1;
-							if (isInteger(((JsonPrimitive)disease.getParameters("eaten")[0]).getAsString())) {
-								itemID = ((JsonPrimitive) disease.getParameters("eaten")[0]).getAsInt();
-							}
-							int itemDamage = ((JsonPrimitive) disease.getParameters("eaten")[1]).getAsInt();
-							int randomChance = ((JsonPrimitive) disease.getParameters("eaten")[2]).getAsInt();
-							if ((itemID != -1 && event.item.getItem() == Item.getItemById(itemID)) || (GameData.getItemRegistry().getObject(((JsonPrimitive) disease.getParameters("eaten")[0]).getAsString().replaceAll("\"", "")) != null && event.item.getItem() == GameData.getItemRegistry().getObject(((JsonPrimitive) disease.getParameters("eaten")[0]).getAsString().replaceAll("\"", "")))) {
-								if (event.item.getItemDamage() == itemDamage && GenericEffects.rand.nextInt(1000000) > randomChance) {
-									DiseaseHelper.addDisease(event.entityLiving, disease);
-								}
+				if (Diseases.diseaseTypes.containsKey("eaten")) {
+					for (Disease disease : Diseases.diseaseTypes.get("eaten")) {
+						//event.item.getItem() == Item.getItemById(itemID) &&
+						int itemID = -1;
+						if (((JsonPrimitive) disease.getParameters("eaten")[0]).isNumber()) {
+							itemID = ((JsonPrimitive) disease.getParameters("eaten")[0]).getAsInt();
+						}
+						int itemDamage = ((JsonPrimitive) disease.getParameters("eaten")[1]).getAsInt();
+						int randomChance = ((JsonPrimitive) disease.getParameters("eaten")[2]).getAsInt();
+						if ((itemID != -1 && event.item.getItem() == Item.getItemById(itemID)) || (GameData.getItemRegistry().getObject(((JsonPrimitive) disease.getParameters("eaten")[0]).getAsString().replaceAll("\"", "")) != null && event.item.getItem() == GameData.getItemRegistry().getObject(((JsonPrimitive) disease.getParameters("eaten")[0]).getAsString().replaceAll("\"", "")))) {
+							if (event.item.getItemDamage() == itemDamage && GenericEffects.rand.nextInt(1000000) > randomChance) {
+								DiseaseHelper.addDisease(event.entityLiving, disease);
 							}
 						}
 					}
@@ -252,6 +285,9 @@ public class ContractingEvents {
 
 	@SubscribeEvent
 	public void endDiseases(DiseaseEvent.DiseaseEndEvent event) {
+		if (!event.entityLiving.worldObj.isRemote) {
+			DiseaseHelper.removeDisease(event.entityLiving,event.disease);
+		}
 		if (event.entityLiving instanceof EntityPlayer) {
 			EntityPlayer player = (EntityPlayer)event.entityLiving;
 			if (!player.getEntityData().hasKey(player.PERSISTED_NBT_TAG, 10)) {
@@ -273,188 +309,6 @@ public class ContractingEvents {
 			return false;
 		}
 		return true;
-	}
-
-	@SubscribeEvent
-	public void zombieHurt(LivingHurtEvent event) {
-		/*
-		if (DiseaseHelper.isDiseaseActive(event.entityLiving,DiseaseHelper.getDiseaseInstance("brainReanimation"))) {
-			if (event.source.getEntity() instanceof EntityZombie) {
-				event.setCanceled(true);
-			}
-		} */
-	}
-
-	@SubscribeEvent
-	public void inputEvent(net.minecraftforge.client.event.MouseEvent event) {
-		/*
-		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
-			net.minecraft.client.Minecraft minecraft = net.minecraft.client.Minecraft.getMinecraft();
-			if (DiseaseHelper.isDiseaseActive(minecraft.thePlayer,DiseaseHelper.getDiseaseInstance("brainReanimation"))) {
-
-				event.setCanceled(true);
-			}
-		} */
-	}
-
-	@SubscribeEvent
-	public void startGame(WorldEvent.Load event) {
-		if (!diseasedCrops.containsKey(event.world)) {
-			File file = new File(event.world.getSaveHandler().getWorldDirectory(), "/DC/diseasedPlants.json");
-			if (file.exists()) {
-				try {
-					GsonBuilder builder = new GsonBuilder();
-					builder.registerTypeAdapter(BlockPos.class, new PositionJSON());
-					Gson gson = builder.create();
-
-					diseasedCrops.put(event.world, Arrays.asList(gson.fromJson(new FileReader(file), BlockPos[].class)));
-
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-			}
-		}
-	}
-
-	@SubscribeEvent
-	public void startGame(WorldEvent.Unload event) {
-		if (!event.world.isRemote && diseasedCrops.containsKey(event.world)) {
-			File file = new File(event.world.getSaveHandler().getWorldDirectory(),"/DC/diseasedPlants.json");
-
-			if (!file.exists()) {
-				file.getParentFile().mkdirs();
-			}
-
-			GsonBuilder gsonBuilder = new GsonBuilder();
-			gsonBuilder.registerTypeAdapter(BlockPos.class, new PositionJSON());
-			Gson gson = gsonBuilder.create();
-
-
-			try
-			{
-				file.createNewFile();
-				BufferedWriter bReader = new BufferedWriter(new FileWriter(file));
-				JsonWriter reader = new JsonWriter(bReader);
-				//bReader.write("[ \n");
-				Type type = new TypeToken<List<BlockPos>>(){}.getType();
-				//for (BlockPos position : diseasedCrops.get(event.world)) {
-					//if (event.world.getBlock(position.x,position.y,position.z) instanceof IPlantable) {
-				gson.toJson(diseasedCrops.get(event.world), type, reader);
-						//if (diseasedCrops.get(event.world).indexOf(position) != diseasedCrops.get(event.world).size() - 1) {
-							//bReader.write(",\n");
-						//}
-					//}
-				//}
-				//bReader.write("\n]");
-				reader.close();
-				System.out.println("Finished writing stuff!");
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
-	}
-
-	@SubscribeEvent
-	public void onLogIn(PlayerEvent.PlayerLoggedInEvent event) {
-		if (!event.player.worldObj.isRemote) {
-			if (!diseasedCrops.containsKey(event.player.worldObj)) {
-				File file = new File(event.player.worldObj.getSaveHandler().getWorldDirectory(), "/DC/diseasedPlants.json");
-				if (file.exists()) {
-					try {
-						GsonBuilder builder = new GsonBuilder();
-						builder.registerTypeAdapter(BlockPos.class, new PositionJSON());
-						Gson gson = builder.create();
-
-						diseasedCrops.put(event.player.worldObj, Arrays.asList(gson.fromJson(new FileReader(file), BlockPos[].class)));
-
-					} catch (Exception ex) {
-						ex.printStackTrace();
-					}
-				}
-			}
-		}
-	}
-
-	@SubscribeEvent
-	public void playerTick(TickEvent.PlayerTickEvent event) {
-		if (!event.player.worldObj.isRemote && event.player.worldObj.getTotalWorldTime() % 40 == 0) {
-			//System.out.println("Fired a tick!");
-			if (ConfigRegistry.doDiseasedCrops) {
-				int xPos = MathHelper.floor_double(event.player.posX);
-				int yPos = MathHelper.floor_double(event.player.posY);
-				int zPos = MathHelper.floor_double(event.player.posZ);
-				for (int x = xPos - ConfigRegistry.diseasedCropsRadius; x <= xPos + ConfigRegistry.diseasedCropsRadius; x++) {
-					for (int y = yPos - ConfigRegistry.diseasedCropsRadius; y <= yPos + ConfigRegistry.diseasedCropsRadius; y++) {
-						for (int z = zPos - ConfigRegistry.diseasedCropsRadius; z <= zPos + ConfigRegistry.diseasedCropsRadius; z++) {
-							World world = event.player.worldObj;
-							if ((world.getBlock(x, y, z) instanceof IPlantable) && !alreadyDiseased(world, x, y, z)) {
-								//System.out.println("Found suitable candidate");
-								if (world.rand.nextInt(100) < ConfigRegistry.diseasedPlantsChance) {
-									if (diseasedCrops.containsKey(world)) {
-										List<BlockPos> blockPoses = new ArrayList<BlockPos>(diseasedCrops.get(world));
-										blockPoses.add(new BlockPos(x, y, z));
-										diseasedCrops.remove(world);
-										diseasedCrops.put(world, blockPoses);
-									} else {
-										List<BlockPos> blockPoses = new ArrayList<BlockPos>();
-										blockPoses.add(new BlockPos(x, y, z));
-										diseasedCrops.put(world, blockPoses);
-									}
-									//System.out.println("Added " + x + ", " + y + ", " + z + " to the list!");
-								}
-							}
-						}
-					}
-				}
-				if (diseasedCrops.containsKey(event.player.worldObj)) {
-					List<BlockPos> poses = new ArrayList<BlockPos>();
-					for (BlockPos pos : diseasedCrops.get(event.player.worldObj)) {
-						if (event.player.worldObj.getBlock(pos.x, pos.y, pos.z) instanceof IPlantable || pos.isForced)
-							poses.add(pos);
-					}
-					diseasedCrops.remove(event.player.worldObj);
-					diseasedCrops.put(event.player.worldObj, poses);
-				}
-			}
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	@SubscribeEvent
-	public void worldTick(TickEvent.WorldTickEvent event) {
-		if (event.world.getTotalWorldTime() % 30 == 0) {
-			if (diseasedCrops.containsKey(event.world)) {
-				for (BlockPos pos : diseasedCrops.get(event.world)) {
-						AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(pos.x - 1.5, pos.y - 0.5, pos.z - 1.5, pos.x + 1.5, pos.y + 1.5, pos.z + 1.5);
-						List<EntityLivingBase> entities = event.world.getEntitiesWithinAABB(EntityLivingBase.class, aabb);
-
-						if ((GameData.getBlockRegistry().getObject(event.world.getBlock(pos.x, pos.y, pos.z).getUnlocalizedName()) instanceof IPlantable)) {
-							for (EntityLivingBase entity : entities) {
-								for (Disease disease : Diseases.diseases) {
-									if (disease.getWaysToContract().contains("crops")) {
-										int chance = ((JsonPrimitive) disease.getParameters("crops")[0]).getAsInt();
-										String[] array = StringUtils.getStringsFromPrimitives((JsonPrimitive[]) StringUtils.cutArray(disease.getParameters("crops"), 1));
-										if (StringUtils.arrayContainsLoose(array, event.world.getBlock(pos.x, pos.y, pos.z).getUnlocalizedName())) {
-											if (!event.world.isRemote && event.world.rand.nextInt(1000000) > chance) {
-												DiseaseHelper.addDisease(entity, disease);
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		if (event.world.getTotalWorldTime() % 1200 == 0) {
-			if (diseasedCrops.containsKey(event.world)) {
-				for (BlockPos pos : diseasedCrops.get(event.world)) {
-					event.world.playAuxSFX(2005, pos.x, pos.y, pos.z, 0);
-				}
-			}
-		}
 	}
 
 	public boolean alreadyDiseased(World world, int x, int y, int z) {

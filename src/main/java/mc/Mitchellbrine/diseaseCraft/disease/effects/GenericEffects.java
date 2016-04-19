@@ -123,7 +123,7 @@ public class GenericEffects {
 
 			player.worldObj.playSoundAtEntity(player, References.MODID.toLowerCase() + ":sneeze", MathHelper.getRandomIntegerInRange(rand,5,10), 0F);
 
-			System.out.println("Sneeze!");
+			//System.out.println("Sneeze!");
 
 			DiseaseCraft.scheduler.schedule(new Runnable() {
 				@Override

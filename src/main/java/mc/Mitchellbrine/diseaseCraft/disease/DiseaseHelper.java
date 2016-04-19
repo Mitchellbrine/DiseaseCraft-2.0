@@ -2,6 +2,7 @@ package mc.Mitchellbrine.diseaseCraft.disease;
 
 import mc.Mitchellbrine.diseaseCraft.api.Disease;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,14 @@ public class DiseaseHelper {
 	public static void addDisease(EntityLivingBase entity, Disease disease, int ticks) {
 		if (!entity.getEntityData().hasKey(disease.getUnlocalizedName().replaceAll(".name", "")) || entity.getEntityData().getInteger(disease.getUnlocalizedName().replaceAll(".name", "")) == 0) {
 			entity.getEntityData().setInteger(disease.getUnlocalizedName().replaceAll(".name", ""), ticks);
+			List<EntityLivingBase> entities;
+			if (!Diseases.diseasedEntities.containsKey(entity.worldObj)) {
+				entities = new ArrayList<EntityLivingBase>();
+			} else {
+				entities = Diseases.diseasedEntities.get(entity.worldObj);
+			}
+			entities.add(entity);
+			Diseases.diseasedEntities.put(entity.worldObj,entities);
 		}
 	}
 
@@ -28,6 +37,12 @@ public class DiseaseHelper {
 	public static void removeDisease(EntityLivingBase entity, Disease disease) {
 		if (entity.getEntityData().hasKey(disease.getUnlocalizedName().replaceAll(".name",""))) {
 			entity.getEntityData().setInteger(disease.getUnlocalizedName().replaceAll(".name",""),0);
+			if (Diseases.diseasedEntities.containsKey(entity.worldObj)) {
+				List<EntityLivingBase> bases = Diseases.diseasedEntities.get(entity.worldObj);
+				if (bases.contains(entity))
+					bases.remove(entity);
+				Diseases.diseasedEntities.put(entity.worldObj,bases);
+			}
 		}
 	}
 
