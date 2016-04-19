@@ -70,12 +70,12 @@ public class Diseases {
 	@SuppressWarnings("unchecked")
 	public static void registerDisease(Disease disease) {
 		if (disease.isRequirementMet()) {
-			ArrayList<Integer> effects = (ArrayList<Integer>)disease.effects;
+			ArrayList<Integer> effects = (ArrayList<Integer>) disease.effects;
 			ArrayList<Integer> correctEffects = new ArrayList<Integer>();
 
 			for (int effect : effects) {
 				if (acceptableModes.contains(effect) || Potion.potionTypes[effect] != null)
-				correctEffects.add(effect);
+					correctEffects.add(effect);
 			}
 
 			disease.effects = correctEffects;
@@ -93,13 +93,13 @@ public class Diseases {
 					if (!diseases1.contains(disease)) {
 						diseases1.add(disease);
 					}
-					diseaseTypes.put(type,diseases1);
+					diseaseTypes.put(type, diseases1);
 					DiseaseCraft.logger.info("Registered " + disease.getId() + " to the type " + type);
 					if (type.equalsIgnoreCase("mob") || type.equalsIgnoreCase("mobAttack")) {
 						if (type.equalsIgnoreCase("mobAttack")) {
-							for (int i = 1; i < disease.getParameters(type).length;i++) {
-								if (EntityList.classToStringMapping.containsValue(disease.getParameters(type)[i])) {
-									Class<? extends EntityLivingBase> clazz = (Class<? extends EntityLivingBase>)EntityList.stringToClassMapping.get(((JsonPrimitive)disease.getParameters(type)[i]).getAsString());
+							if (((JsonPrimitive) disease.getParameters(type)[0]).isString()) {
+								if (EntityList.classToStringMapping.containsValue(disease.getParameters(type)[0])) {
+									Class<? extends EntityLivingBase> clazz = (Class<? extends EntityLivingBase>) EntityList.stringToClassMapping.get(((JsonPrimitive) disease.getParameters(type)[0]).getAsString());
 									if (!entityClasses.contains(clazz))
 										entityClasses.add(clazz);
 									if (!mobAttackClasses.contains(clazz))
@@ -107,9 +107,29 @@ public class Diseases {
 								}
 							}
 						} else {
-							for (int i = 2; i < disease.getParameters(type).length;i++) {
+							for (int i = 1; i < disease.getParameters(type).length; i++) {
 								if (EntityList.classToStringMapping.containsValue(disease.getParameters(type)[i])) {
-									Class<? extends EntityLivingBase> clazz = (Class<? extends EntityLivingBase>)EntityList.stringToClassMapping.get(((JsonPrimitive)disease.getParameters(type)[i]).getAsString());
+									Class<? extends EntityLivingBase> clazz = (Class<? extends EntityLivingBase>) EntityList.stringToClassMapping.get(((JsonPrimitive) disease.getParameters(type)[i]).getAsString());
+									if (!entityClasses.contains(clazz))
+										entityClasses.add(clazz);
+									if (!mobAttackClasses.contains(clazz))
+										mobAttackClasses.add(clazz);
+								}
+							}
+						}
+					} else {
+						if (((JsonPrimitive) disease.getParameters(type)[0]).isString()) {
+							if (EntityList.classToStringMapping.containsValue(disease.getParameters(type)[0])) {
+								Class<? extends EntityLivingBase> clazz = (Class<? extends EntityLivingBase>) EntityList.stringToClassMapping.get(((JsonPrimitive) disease.getParameters(type)[0]).getAsString());
+								if (!entityClasses.contains(clazz))
+									entityClasses.add(clazz);
+								if (!mobClasses.contains(clazz))
+									mobClasses.add(clazz);
+							}
+						} else {
+							for (int i = 2; i < disease.getParameters(type).length; i++) {
+								if (EntityList.classToStringMapping.containsValue(disease.getParameters(type)[i])) {
+									Class<? extends EntityLivingBase> clazz = (Class<? extends EntityLivingBase>) EntityList.stringToClassMapping.get(((JsonPrimitive) disease.getParameters(type)[i]).getAsString());
 									if (!entityClasses.contains(clazz))
 										entityClasses.add(clazz);
 									if (!mobClasses.contains(clazz))
