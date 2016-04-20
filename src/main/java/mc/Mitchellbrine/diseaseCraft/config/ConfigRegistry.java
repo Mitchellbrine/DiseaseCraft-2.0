@@ -39,6 +39,7 @@ public class ConfigRegistry {
 
 	public static Logger logger = LogManager.getLogger("DiseaseCraft-Config");
 
+	@SuppressWarnings("deprecation")
 	public static void init(File configDirectory) {
 		enabledMods = ClassHelper.modules.values();
 		try {

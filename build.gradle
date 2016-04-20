@@ -1,14 +1,14 @@
 buildscript {
     repositories {
         mavenCentral()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
 		maven { // The repo from which to get waila
 			name "Mobius Repo"
 			url "http://mobiusstrip.eu/maven"
 		}
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
         maven {
             name = "sonatype"
             url = "https://oss.sonatype.org/content/repositories/snapshots/"
@@ -21,14 +21,14 @@ buildscript {
 
 apply plugin: 'forge'
 
-version = "1.7.10-2.2.0.2a"
+version = "1.7.10-2.3"
 project.ext.neiVersion = "1.7.10-1.0.4.107"
 group= "mc.Mitchellbrine.diseaseCraft" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "DiseaseCraft"
 
 minecraft {
     //version = "1.8-11.14.1.1334"
-	version = "10.13.4.1448-1.7.10"
+	version = "10.13.4.1558-1.7.10"
 	if (file('../run').exists()) {
 		runDir = "../run"
 	} else {
@@ -56,8 +56,8 @@ dependencies {
     compile 'org.jfree:jfreechart:1.0.17'
     compile 'com.miglayout:miglayout-swing:4.2'
     compile 'net.sf.opencsv:opencsv:2.3'
-    compile "mcp.mobius.mobiuscore:MobiusCore:1.2.4:dev"
-    compile "mcp.mobius.opis:Opis:1.2.4:dev"
+    //compile "mcp.mobius.mobiuscore:MobiusCore:1.2.4:dev"
+    //compile "mcp.mobius.opis:Opis:1.2.4:dev"
 }
  
 // some crazy stuff to make sure the coremod stuff is in the mods folder...

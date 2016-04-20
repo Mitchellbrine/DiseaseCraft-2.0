@@ -16,7 +16,7 @@ public class DiseaseDownloader {
 	public static void init() {
 		try {
 			PrintWriter writer = new PrintWriter(new File((File)FMLInjectionData.data()[6],"DiseaseCraft/DiseaseCraft.json"));
-			InputStream stream = new URL("https://raw.githubusercontent.com/Mitchellbrine/DiseaseCraft-2.0/master/diseaseJSON/DiseaseCraft.json").openStream();
+			InputStream stream = new URL("https://raw.githubusercontent.com/Mitchellbrine/DiseaseCraft-2.0/master/src/main/resources/assets/diseasecraft/diseases/DiseaseCraft.json").openStream();
 
 			try {
 				writer.println(IOUtils.toString(stream));
