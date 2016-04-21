@@ -6,6 +6,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import mc.Mitchellbrine.diseaseCraft.DiseaseCraft;
 import mc.Mitchellbrine.diseaseCraft.api.Disease;
+import mc.Mitchellbrine.diseaseCraft.api.DiseaseRegistrationEvent;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.potion.Potion;
@@ -69,71 +70,73 @@ public class Diseases {
 
 	@SuppressWarnings("unchecked")
 	public static void registerDisease(Disease disease) {
-		if (disease.isRequirementMet()) {
-			ArrayList<Integer> effects = (ArrayList<Integer>) disease.effects;
-			ArrayList<Integer> correctEffects = new ArrayList<Integer>();
+		if (!MinecraftForge.EVENT_BUS.post(new DiseaseRegistrationEvent.DiseaseCancelation(disease))) {
+			if (disease.isRequirementMet()) {
+				ArrayList<Integer> effects = (ArrayList<Integer>) disease.effects;
+				ArrayList<Integer> correctEffects = new ArrayList<Integer>();
 
-			for (int effect : effects) {
-				if (acceptableModes.contains(effect) || Potion.potionTypes[effect] != null)
-					correctEffects.add(effect);
-			}
+				for (int effect : effects) {
+					if (acceptableModes.contains(effect) || Potion.potionTypes[effect] != null)
+						correctEffects.add(effect);
+				}
 
-			disease.effects = correctEffects;
+				disease.effects = correctEffects;
 
-			diseases.add(disease);
+				diseases.add(disease);
 
-			for (String type : types) {
-				if (disease.getParameters(type) != null) {
-					List<Disease> diseases1;
-					if (diseaseTypes.containsKey(type)) {
-						diseases1 = diseaseTypes.get(type);
-					} else {
-						diseases1 = new ArrayList<Disease>();
-					}
-					if (!diseases1.contains(disease)) {
-						diseases1.add(disease);
-					}
-					diseaseTypes.put(type, diseases1);
-					DiseaseCraft.logger.info("Registered " + disease.getId() + " to the type " + type);
-					if (type.equalsIgnoreCase("mob") || type.equalsIgnoreCase("mobAttack")) {
-						if (type.equalsIgnoreCase("mobAttack")) {
+				for (String type : types) {
+					if (disease.getParameters(type) != null) {
+						List<Disease> diseases1;
+						if (diseaseTypes.containsKey(type)) {
+							diseases1 = diseaseTypes.get(type);
+						} else {
+							diseases1 = new ArrayList<Disease>();
+						}
+						if (!diseases1.contains(disease)) {
+							diseases1.add(disease);
+						}
+						diseaseTypes.put(type, diseases1);
+						DiseaseCraft.logger.info("Registered " + disease.getId() + " to the type " + type);
+						if (type.equalsIgnoreCase("mob") || type.equalsIgnoreCase("mobAttack")) {
+							if (type.equalsIgnoreCase("mobAttack")) {
+								if (((JsonPrimitive) disease.getParameters(type)[0]).isString()) {
+									if (EntityList.classToStringMapping.containsValue(disease.getParameters(type)[0])) {
+										Class<? extends EntityLivingBase> clazz = (Class<? extends EntityLivingBase>) EntityList.stringToClassMapping.get(((JsonPrimitive) disease.getParameters(type)[0]).getAsString());
+										if (!entityClasses.contains(clazz))
+											entityClasses.add(clazz);
+										if (!mobAttackClasses.contains(clazz))
+											mobAttackClasses.add(clazz);
+									}
+								}
+							} else {
+								for (int i = 1; i < disease.getParameters(type).length; i++) {
+									if (EntityList.classToStringMapping.containsValue(disease.getParameters(type)[i])) {
+										Class<? extends EntityLivingBase> clazz = (Class<? extends EntityLivingBase>) EntityList.stringToClassMapping.get(((JsonPrimitive) disease.getParameters(type)[i]).getAsString());
+										if (!entityClasses.contains(clazz))
+											entityClasses.add(clazz);
+										if (!mobAttackClasses.contains(clazz))
+											mobAttackClasses.add(clazz);
+									}
+								}
+							}
+						} else {
 							if (((JsonPrimitive) disease.getParameters(type)[0]).isString()) {
 								if (EntityList.classToStringMapping.containsValue(disease.getParameters(type)[0])) {
 									Class<? extends EntityLivingBase> clazz = (Class<? extends EntityLivingBase>) EntityList.stringToClassMapping.get(((JsonPrimitive) disease.getParameters(type)[0]).getAsString());
 									if (!entityClasses.contains(clazz))
 										entityClasses.add(clazz);
-									if (!mobAttackClasses.contains(clazz))
-										mobAttackClasses.add(clazz);
-								}
-							}
-						} else {
-							for (int i = 1; i < disease.getParameters(type).length; i++) {
-								if (EntityList.classToStringMapping.containsValue(disease.getParameters(type)[i])) {
-									Class<? extends EntityLivingBase> clazz = (Class<? extends EntityLivingBase>) EntityList.stringToClassMapping.get(((JsonPrimitive) disease.getParameters(type)[i]).getAsString());
-									if (!entityClasses.contains(clazz))
-										entityClasses.add(clazz);
-									if (!mobAttackClasses.contains(clazz))
-										mobAttackClasses.add(clazz);
-								}
-							}
-						}
-					} else {
-						if (((JsonPrimitive) disease.getParameters(type)[0]).isString()) {
-							if (EntityList.classToStringMapping.containsValue(disease.getParameters(type)[0])) {
-								Class<? extends EntityLivingBase> clazz = (Class<? extends EntityLivingBase>) EntityList.stringToClassMapping.get(((JsonPrimitive) disease.getParameters(type)[0]).getAsString());
-								if (!entityClasses.contains(clazz))
-									entityClasses.add(clazz);
-								if (!mobClasses.contains(clazz))
-									mobClasses.add(clazz);
-							}
-						} else {
-							for (int i = 2; i < disease.getParameters(type).length; i++) {
-								if (EntityList.classToStringMapping.containsValue(disease.getParameters(type)[i])) {
-									Class<? extends EntityLivingBase> clazz = (Class<? extends EntityLivingBase>) EntityList.stringToClassMapping.get(((JsonPrimitive) disease.getParameters(type)[i]).getAsString());
-									if (!entityClasses.contains(clazz))
-										entityClasses.add(clazz);
 									if (!mobClasses.contains(clazz))
 										mobClasses.add(clazz);
+								}
+							} else {
+								for (int i = 2; i < disease.getParameters(type).length; i++) {
+									if (EntityList.classToStringMapping.containsValue(disease.getParameters(type)[i])) {
+										Class<? extends EntityLivingBase> clazz = (Class<? extends EntityLivingBase>) EntityList.stringToClassMapping.get(((JsonPrimitive) disease.getParameters(type)[i]).getAsString());
+										if (!entityClasses.contains(clazz))
+											entityClasses.add(clazz);
+										if (!mobClasses.contains(clazz))
+											mobClasses.add(clazz);
+									}
 								}
 							}
 						}
@@ -152,15 +155,19 @@ public class Diseases {
 	}
 
 	public static void addMode(int modeNumber, Method method) {
-		if (acceptableModes.contains(modeNumber)) {
-			DiseaseCraft.logger.error("The id " + modeNumber + " is already taken for modes. Please try another and report this to the mod author.");
-		}
-		acceptableModes.add(modeNumber);
-		modesAndMethods.put(modeNumber, method);
-		if (method.getName().lastIndexOf(".") != -1) {
-			modesAndNames.put(method, method.getName().substring(method.getName().lastIndexOf(".")));
+		if (!MinecraftForge.EVENT_BUS.post(new DiseaseRegistrationEvent.Mode(modeNumber, method))) {
+			if (acceptableModes.contains(modeNumber)) {
+				DiseaseCraft.logger.error("The id " + modeNumber + " is already taken for modes. Please try another and report this to the mod author.");
+			}
+			acceptableModes.add(modeNumber);
+			modesAndMethods.put(modeNumber, method);
+			if (method.getName().lastIndexOf(".") != -1) {
+				modesAndNames.put(method, method.getName().substring(method.getName().lastIndexOf(".")));
+			} else {
+				modesAndNames.put(method, method.getName());
+			}
 		} else {
-			modesAndNames.put(method, method.getName());
+			DiseaseCraft.logger.info("Mode number " + modeNumber + " was canceled by a posted event. The method canceled was " + method);
 		}
 	}
 
